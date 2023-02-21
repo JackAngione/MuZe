@@ -1,4 +1,4 @@
-package com.example.muze
+package com.example.muzecode
 
 import org.junit.Test
 
