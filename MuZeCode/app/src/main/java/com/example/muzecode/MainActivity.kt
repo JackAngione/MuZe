@@ -111,7 +111,6 @@ fun Greeting(player: ExoPlayer) {
                         }
                     }
 
-
                     Slider(
                         modifier = Modifier.fillMaxWidth(),
                         value = sliderPosition,
@@ -135,24 +134,71 @@ fun Greeting(player: ExoPlayer) {
         }//end sheet content
     ) {
 
+        /* FUNCTION TO RECURSIVELY GET ALL AUDIO FILES IN A GIVEN FOLDER!!!!!!!!!!!!
+        fun getAudioFiles(folder: File): List<File> {
+            val audioFiles = mutableListOf<File>()
+            folder.listFiles()?.forEach { file ->
+                if (file.isDirectory) {
+                    audioFiles.addAll(getAudioFiles(file))
+                } else if (file.isFile && file.extension in arrayOf("mp3", "wav", "ogg", "aac")) {
+                    audioFiles.add(file)
+                }
+            }
+            return audioFiles
+        } */
 
-        val audioFolder = File("/storage/emulated/0/Music")
-        val audioFiles = audioFolder.listFiles()
-        for(audio in audioFiles)
+        val musicFolder = File("/storage/emulated/0/Music")
+        var currentFolder by remember { mutableStateOf(musicFolder) }
+        val currentFolderFiles by remember(currentFolder)
         {
-            Log.d("audio", audio.extension)
+            derivedStateOf { currentFolder.listFiles() }
         }
+
         LazyColumn(
             modifier = Modifier.fillMaxSize()
         ) {
-            items(audioFiles) { audioFile ->
-                Card(modifier = Modifier.fillMaxWidth(), onClick = { /*TODO*/ }) {
-                    Text(
-                        text = audioFile.name,
-                        fontSize = 18.sp,
-                        modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally)
-                    )
+            item { Card(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    currentFolder = currentFolder.parentFile
+                })
+            {
+                Text(
+                    text = "-Back-",
+                    fontSize = 18.sp,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.CenterHorizontally)
+                )
+            } }
+
+            items(currentFolderFiles) { audioFile ->
+                if(audioFile.extension in arrayOf("mp3", "wav", "ogg", "aac") || audioFile.isDirectory)
+                {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            if(audioFile.isDirectory)
+                            {
+                                currentFolder = audioFile
+                            }
+                            else
+                            {
+                                val audioUri = Uri.parse(audioFile.toString())
+                                player.setMediaItem(MediaItem.fromUri(audioUri))
+                                player.prepare()
+                            }
+                        }) {
+                        Text(
+                            text = audioFile.name,
+                            fontSize = 18.sp,
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .align(Alignment.CenterHorizontally)
+                        )
+                    }
                 }
+
 
             }
         }
