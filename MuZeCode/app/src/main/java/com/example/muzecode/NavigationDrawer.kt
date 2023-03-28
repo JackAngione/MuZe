@@ -29,7 +29,6 @@ fun DrawerHeader() {
 fun DrawerBody(
     items: List<MenuItem>,
     modifier: Modifier = Modifier,
-    itemTextStyle: androidx.compose.ui.text.TextStyle = androidx.compose.ui.text.TextStyle(fontSize = 18.sp),
     onItemClick: (MenuItem) -> Unit
 ) {
     LazyColumn(modifier) {

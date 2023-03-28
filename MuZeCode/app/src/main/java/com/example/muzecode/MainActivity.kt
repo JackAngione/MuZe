@@ -1,5 +1,5 @@
 package com.example.muzecode
-
+import com.example.muzecode.Mainview
 import android.app.PendingIntent.getActivity
 import android.net.Uri
 import android.os.Bundle
@@ -30,12 +30,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+
         //CREATE MEDIA PLAYER
-
         val player = ExoPlayer.Builder(this).build()
-
         val mediaSession = MediaSession.Builder(this, player).build()
-
 
         //END CREATE MEDIA PLAYER
         setContent {
@@ -47,11 +45,9 @@ class MainActivity : ComponentActivity() {
                 ) {
                     AndroidView(
                         factory = { context ->
-                            val audioFile = File("./Crystal Castles - Leni.mp3")
                             val audioUri = Uri.parse("android.resource://${packageName}/raw/leni")
                             val playerView = PlayerView(context)
                             playerView.player = player
-                            //"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
                             player.setMediaItem(MediaItem.fromUri(audioUri))
                             player.prepare()
                             player.play()
@@ -61,150 +57,13 @@ class MainActivity : ComponentActivity() {
                             // Update the view if needed
                         }
                     )
-                    val strings = listOf("Hello", "World", "Jetpack", "Compose", "hello", "Hello", "World", "Jetpack", "Compose", "hello", "Hello", "World", "Jetpack", "Compose", "hello")
-                    Greeting(player)
+                    //LOAD UP MAIN UI VIEW
+                    val mainview = Mainview()
+                    mainview.FolderView(player)
                 }
             }
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun Greeting(player: ExoPlayer) {
-    var isPlaying by remember { mutableStateOf(false) }
-
-
-    BottomSheetScaffold(
-
-        sheetContent = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.Center
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Button(
-                        //modifier = Modifier.align(Alignment.CenterHorizontally),
-                        onClick = { isPlaying = !isPlaying })
-                    {
-                        if (!isPlaying) {
-                            Text(text = "Play")
-                            player.pause()
-                        } else {
-                            Text(text = "Pause")
-                            player.play()
-                        }
-                    }
-                    //AUDIO SEEK BAR
-                    var sliderPosition by remember { mutableStateOf(0f) }
-                    val duration = player.duration
-
-                    LaunchedEffect(player) {
-                        while (true) {
-                            sliderPosition = player.currentPosition.toFloat()
-                            delay(16)
-                        }
-                    }
-
-                    Slider(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = sliderPosition,
-
-                        onValueChange = {
-                                newPosition -> player.seekTo(newPosition.toLong())
-                        },
-                        valueRange =
-                            if (duration != C.TIME_UNSET)
-                            {
-                                0f..duration.toFloat()
-                            }
-                            else
-                            {
-                                0f..100f // if audio isn't playing, fallback range
-                        },
-                    )
-
-                }
-            }
-        }//end sheet content
-    ) {
-
-        /* FUNCTION TO RECURSIVELY GET ALL AUDIO FILES IN A GIVEN FOLDER!!!!!!!!!!!!
-        fun getAudioFiles(folder: File): List<File> {
-            val audioFiles = mutableListOf<File>()
-            folder.listFiles()?.forEach { file ->
-                if (file.isDirectory) {
-                    audioFiles.addAll(getAudioFiles(file))
-                } else if (file.isFile && file.extension in arrayOf("mp3", "wav", "ogg", "aac")) {
-                    audioFiles.add(file)
-                }
-            }
-            return audioFiles
-        } */
-
-        val musicFolder = File("/storage/emulated/0/Music")
-        var currentFolder by remember { mutableStateOf(musicFolder) }
-        val currentFolderFiles by remember(currentFolder)
-        {
-            derivedStateOf { currentFolder.listFiles() }
-        }
-
-        LazyColumn(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            item { Card(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {
-                    currentFolder = currentFolder.parentFile
-                })
-            {
-                Text(
-                    text = "-Back-",
-                    fontSize = 18.sp,
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .align(Alignment.CenterHorizontally)
-                )
-            } }
-
-            items(currentFolderFiles) { audioFile ->
-                if(audioFile.extension in arrayOf("mp3", "wav", "ogg", "aac") || audioFile.isDirectory)
-                {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            if(audioFile.isDirectory)
-                            {
-                                currentFolder = audioFile
-                            }
-                            else
-                            {
-                                val audioUri = Uri.parse(audioFile.toString())
-                                player.setMediaItem(MediaItem.fromUri(audioUri))
-                                player.prepare()
-                            }
-                        }) {
-                        Text(
-                            text = audioFile.name,
-                            fontSize = 18.sp,
-                            modifier = Modifier
-                                .padding(16.dp)
-                                .align(Alignment.CenterHorizontally)
-                        )
-                    }
-                }
-
-
-            }
-        }
-
-    }
-
 }
 
 
