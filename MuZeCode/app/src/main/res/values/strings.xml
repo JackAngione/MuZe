@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MuZeCode</string>
+    <string name="perm_granted">You already have file access!</string>
 </resources>

@@ -1,12 +1,17 @@
 package com.example.muzecode
 
 import android.app.PendingIntent.getActivity
+import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.util.Log
+import android.os.Environment
+import android.provider.Settings
 import android.widget.SeekBar
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -36,8 +41,21 @@ class MainActivity : ComponentActivity() {
 
         val mediaSession = MediaSession.Builder(this, player).build()
 
+        if (Build.VERSION.SDK_INT >= 30) {
+            if (hasFilesPermission()) {
+                Toast.makeText(this, R.string.perm_granted, Toast.LENGTH_LONG)
+                    .show()
+            }
+            val uri = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+            startActivity(
+                Intent(
+                    Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                    uri
+                )
+            )
+        }
 
-        //END CREATE MEDIA PLAYER
+            //END CREATE MEDIA PLAYER
         setContent {
             MuZeCodeTheme {
                 // A surface container using the 'background' color from the theme
@@ -67,6 +85,8 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+    @RequiresApi(Build.VERSION_CODES.R)
+    private fun hasFilesPermission() = Environment.isExternalStorageManager()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -204,7 +224,4 @@ fun Greeting(player: ExoPlayer) {
         }
 
     }
-
 }
-
-
