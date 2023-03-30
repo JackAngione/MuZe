@@ -1,19 +1,15 @@
 package com.example.muzecode
 
-import android.app.PendingIntent.getActivity
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
 import android.provider.Settings.*
 import android.util.Log
 import android.widget.SeekBar
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -47,20 +43,6 @@ class MainActivity : ComponentActivity() {
 
         val mediaSession = MediaSession.Builder(this, player).build()
 
-        /*if (Build.VERSION.SDK_INT >= 30) {
-            if (hasFilesPermission()) {
-                Toast.makeText(this, R.string.perm_granted, Toast.LENGTH_LONG)
-                    .show()
-            }
-            val uri = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
-            startActivity(
-                Intent(
-                    Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
-                    uri
-                )
-            )
-        } //should auto grant if <30*/
-
             //END CREATE MEDIA PLAYER
         setContent {
             MuZeCodeTheme {
@@ -85,40 +67,12 @@ class MainActivity : ComponentActivity() {
                             // Update the view if needed
                         }
                     )*/
-                    val strings = listOf("Hello", "World", "Jetpack", "Compose", "hello", "Hello", "World", "Jetpack", "Compose", "hello", "Hello", "World", "Jetpack", "Compose", "hello")
                     permCheck(player)
                 }
             }
         }
     }
-    /*
-    @RequiresApi(Build.VERSION_CODES.R)
-    private fun hasFilesPermission() = Environment.isExternalStorageManager()*/
 }
-
-/*
-@OptIn(ExperimentalPermissionsApi::class)
-@Composable
-private fun checkPermission() {
-    val storagePermissionState = rememberPermissionState(android.Manifest.permission.MANAGE_EXTERNAL_STORAGE)
-    Log.d(null, "Value of storagePermission: ${storagePermissionState.status.isGranted}")
-    if(storagePermissionState.status.isGranted) {
-        Text("Storage Permission Granted!")
-    }else {
-        Column {
-            val storageError = if(storagePermissionState.status.shouldShowRationale){
-                "Storage access is needed for this app. Please grant permission."
-            }else {
-                "Storage Permission required for the app to function! Please grant the permission."
-            }
-            Text(storageError)
-            Log.d(null, "Should show prompt here...")
-            Button(onClick = { storagePermissionState.launchPermissionRequest() }) {
-                Text("Request permission")
-            }
-        }
-    }
-}*/
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -131,35 +85,74 @@ private fun permCheck(playerToPass: ExoPlayer) {
         permissionNotGrantedContent = {
             //Runs if the specified permission is not granted
             if(doNotShow){
-                Text("App Unavailable")
-            } else {
-                Column {
+                Column (
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
                     Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = "The App makes use of your device's internal storage. Grant permission?"
+                        text = "MuZe unavailable!",
+                        fontSize = 26.sp,
+                        modifier = Modifier.padding(8.dp)
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Please grant storage permission in settings",
+                        fontSize = 26.sp,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                    Button(onClick = { //if cancel is pressed, nothing is generated but a button to go to settings
+                        val uri = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+                        val i = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,uri)
+                        context.startActivity(i) },
+                        modifier = Modifier.padding(8.dp)
+                    ){
+                        Text("Go to MuZe Settings")
+                    }
+                }
+            } else {
+                Column (
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "MuZe makes use of your device's internal storage.",
+                        fontSize = 26.sp,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                    Text(
+                        text = "Grant permission?",
+                        fontSize = 26.sp,
+                        modifier = Modifier.padding(8.dp)
+                    )
                     Row {//creates a pop-up that automatically edits storage permission
-                        Button(onClick = {storagePermissionState.launchPermissionRequest()}){
-                            Text("OK")
+                        Button(onClick = {
+                            storagePermissionState.launchPermissionRequest()},
+                            modifier = Modifier.padding(8.dp)
+                        ){
+                            Text("Okay")
                         }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Button(onClick = {doNotShow = true}) {
-                            Text("No Thanks")
+                        Button(
+                            onClick = {doNotShow = true},
+                            modifier = Modifier.padding(8.dp)
+                        ) {
+                            Text("Cancel")
                         }
                     }
                 }
             }
         },
         permissionNotAvailableContent = { //shouldn't be an issue but is a failsafe for unavailable permission
-            Column {
+            Column (
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ){
                 Text( "Storage Access Denied! Please grant access via app settings!")
                 Spacer(modifier = Modifier.height(8.dp))
-                Button(onClick = {
-                    val i = Intent(ACTION_LOCATION_SOURCE_SETTINGS)
+                Button(onClick = { //onClick sends to the app's permission pages
+                    val uri = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+                    val i = Intent(ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,uri)
                     context.startActivity(i)
                 }){
-                    Text("Go to Settings")
+                    Text("Go to MuZe Settings")
                 }
             }
         }
@@ -174,7 +167,6 @@ fun Greeting(player: ExoPlayer) {
     var isPlaying by remember { mutableStateOf(false) }
 
     BottomSheetScaffold(
-
         sheetContent = {
             Column(
                 modifier = Modifier
@@ -251,8 +243,6 @@ fun Greeting(player: ExoPlayer) {
         {
             derivedStateOf { currentFolder.listFiles() }
         }
-
-        //if permissions not yet granted, display nothing but prompt?
 
         LazyColumn(
             modifier = Modifier.fillMaxSize()
