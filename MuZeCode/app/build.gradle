@@ -48,6 +48,7 @@ android {
 dependencies {
 
     var media3_version = "1.0.0"
+    var nav_version = "2.5.3"
 
     //For handling proper permissions
     implementation "com.google.accompanist:accompanist-permissions:0.20.0"
@@ -120,7 +121,7 @@ dependencies {
     implementation 'com.google.android.exoplayer:extension-cronet:2.18.5'
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.18.5'
     */
-
+    implementation "androidx.navigation:navigation-compose:$nav_version"
     implementation 'androidx.compose.material:material-icons-extended:1.4.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1'
     testImplementation 'junit:junit:4.13.2'
