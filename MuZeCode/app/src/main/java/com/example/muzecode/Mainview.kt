@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.sp
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import java.io.File
 
@@ -21,7 +22,7 @@ class Mainview {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
 
-    public fun FolderView(player: ExoPlayer) {
+    public fun FolderView(player: ExoPlayer, navController: NavController) {
         var isPlaying by remember { mutableStateOf(false) }
         val musicFolder = File("/storage/emulated/0/Music")
         var currentFolder by remember { mutableStateOf(musicFolder) }
