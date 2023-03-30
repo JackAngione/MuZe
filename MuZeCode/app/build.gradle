@@ -45,10 +45,12 @@ android {
         }
     }
 }
-
 dependencies {
 
     var media3_version = "1.0.0"
+
+    //For handling proper permissions
+    implementation "com.google.accompanist:accompanist-permissions:0.20.0"
 
     // For media playback using ExoPlayer
     implementation("androidx.media3:media3-exoplayer:$media3_version")
