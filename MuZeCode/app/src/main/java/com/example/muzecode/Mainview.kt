@@ -35,14 +35,14 @@ class Mainview {
         }
         val currentFolderAudioFiles by remember(currentFolder.listFiles()){
             derivedStateOf { currentFolder.listFiles().filter { file ->
-                file.isFile && (file.name.endsWith(".mp3", true) || file.name.endsWith(".wav", true))
+                file.isFile && file.extension in arrayOf("mp3", "wav", "ogg", "aac")
             } }
-
         }
+        var playingFolderAudioFiles by remember{ mutableStateOf(currentFolderAudioFiles) }
         var playingSongIndex by remember{mutableStateOf(0)}
-        val playingSong by remember(currentFolderFiles[playingSongIndex].name)
+        val playingSong by remember(playingFolderAudioFiles[playingSongIndex].name)
         {
-            derivedStateOf { currentFolderFiles[playingSongIndex].name }
+            derivedStateOf { playingFolderAudioFiles[playingSongIndex].name }
         }
 
         BottomSheetScaffold(
@@ -152,19 +152,19 @@ class Mainview {
 
             fun setFolderQueue(selectedIndex: Int)
             {
-
+                playingFolderAudioFiles = currentFolderAudioFiles
                 player.clearMediaItems()
                 playingSongIndex = 0
                 val mediaItems = mutableListOf<MediaItem>()
-                for(i in currentFolderAudioFiles.indices)
+                for(i in playingFolderAudioFiles.indices)
                 {
-                    if(currentFolderAudioFiles[i].isDirectory)
+                    if(playingFolderAudioFiles[i].isDirectory || playingFolderAudioFiles[i].extension !in arrayOf("mp3", "wav", "ogg", "aac") )
                     {
                         continue;
                     }
                     else
                     {
-                        val audioUri = Uri.parse(currentFolderAudioFiles[i].toString())
+                        val audioUri = Uri.parse(playingFolderAudioFiles[i].toString())
                         mediaItems.add(MediaItem.fromUri(audioUri))
                     }
                 }
@@ -184,10 +184,7 @@ class Mainview {
                 item { Card(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                        if(currentFolder == File("/storage/emulated/0/Music")) {
-                            //Do nothing
-                        }
-                        else {
+                        if(currentFolder != File("/storage/emulated/0/Music")) {
                             currentFolder = currentFolder.parentFile
                             playingSongIndex = 0
                         }
@@ -202,7 +199,7 @@ class Mainview {
                     )
                 } }
 
-                itemsIndexed(currentFolderFiles) {index, audioFileCard ->
+                itemsIndexed(currentFolderAudioFiles) {index, audioFileCard ->
                     if(audioFileCard.extension in arrayOf("mp3", "wav", "ogg", "aac") || audioFileCard.isDirectory)
                     {
                         Card(
@@ -217,6 +214,25 @@ class Mainview {
                                 {
                                     setFolderQueue(index)
                                 }
+                            }) {
+                            Text(
+                                text = audioFileCard.name,
+                                fontSize = 18.sp,
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .align(Alignment.CenterHorizontally)
+                            )
+                        }
+                    }
+                }
+                itemsIndexed(currentFolderFiles) {index, audioFileCard ->
+                    if(audioFileCard.isDirectory)
+                    {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+                                    currentFolder = audioFileCard
+
                             }) {
                             Text(
                                 text = audioFileCard.name,
