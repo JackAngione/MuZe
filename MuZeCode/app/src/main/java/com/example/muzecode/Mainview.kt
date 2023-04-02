@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
@@ -25,6 +26,7 @@ class Mainview {
     @ExperimentalComposeUiApi
     @ExperimentalFoundationApi
     @Composable
+
     public fun FolderView(player: ExoPlayer, navController: NavController) {
         var isPlaying by remember { mutableStateOf(false) }
         val musicFolder = File("/storage/emulated/0/Music")
@@ -36,14 +38,24 @@ class Mainview {
         val currentFolderAudioFiles by remember(currentFolder.listFiles()){
             derivedStateOf { currentFolder.listFiles().filter { file ->
                 file.isFile && file.extension in arrayOf("mp3", "wav", "ogg", "aac")
-            } }
+            }.sortedBy {it.name} }
         }
         var playingFolderAudioFiles by remember{ mutableStateOf(currentFolderAudioFiles) }
         var playingSongIndex by remember{mutableStateOf(0)}
-        val playingSong by remember(playingFolderAudioFiles[playingSongIndex].name)
+        val playingSong by remember("")
         {
             derivedStateOf { playingFolderAudioFiles[playingSongIndex].name }
         }
+
+        player.addListener(object: Player.Listener
+        {
+            override fun onMediaItemTransition(
+                mediaItem: MediaItem?,
+                @Player.MediaItemTransitionReason reason: Int,
+            ) {
+                //playingSong = player.currentMediaItem?.mediaMetadata?.title as String?
+            }
+        })
 
         BottomSheetScaffold(
 
@@ -54,15 +66,12 @@ class Mainview {
                         .padding(16.dp),
                     verticalArrangement = Arrangement.Center
                 ) {
-
                     Text(
                         text = playingSong.toString(),
                         modifier = Modifier
                             .align(Alignment.CenterHorizontally)
                             .padding(bottom = 10.dp)
                     )
-
-
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center
