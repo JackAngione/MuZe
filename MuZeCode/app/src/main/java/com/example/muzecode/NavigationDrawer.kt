@@ -14,34 +14,36 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-@Composable
-fun DrawerHeader() {
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 64.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = "Header", fontSize = 60.sp)
+class NavigationDrawer {
+    @Composable
+    fun DrawerHeader() {
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 64.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(text = "Header", fontSize = 60.sp)
+        }
     }
-}
-@Composable
-fun DrawerBody(
-    items: List<MenuItem>,
-    modifier: Modifier = Modifier,
-    onItemClick: (MenuItem) -> Unit
-) {
-    LazyColumn(modifier) {
-        items(items) { item ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        onItemClick(item)
-                    }
-                    .padding(16.dp)
-            ) {
-                Icon(imageVector = item.icon, contentDescription = null)
+    @Composable
+    fun DrawerBody(
+        items: List<MenuItem>,
+        modifier: Modifier = Modifier,
+        onItemClick: (MenuItem) -> Unit
+    ) {
+        LazyColumn(modifier) {
+            items(items) { item ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onItemClick(item)
+                        }
+                        .padding(16.dp)
+                ) {
+                    Text(item.id)
+                    //Icon(imageVector = item.icon, contentDescription = null)
+                }
             }
         }
     }

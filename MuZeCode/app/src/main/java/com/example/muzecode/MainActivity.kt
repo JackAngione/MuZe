@@ -19,9 +19,12 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.provider.ContactsContract
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.unit.dp
 import androidx.media3.exoplayer.ExoPlayer
@@ -30,6 +33,7 @@ import androidx.media3.ui.PlayerView
 import androidx.navigation.compose.*
 import com.example.muzecode.ui.theme.MuZeCodeTheme
 import com.google.accompanist.permissions.*
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -74,7 +78,8 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
 @Composable
@@ -159,13 +164,41 @@ private fun permCheck(playerToPass: ExoPlayer) {
             }
         }
     ) { //will run once permission is granted
-        val mainview = Mainview()
+        val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+        val scope = rememberCoroutineScope()
+        val items = listOf(Icons.Default.Favorite, Icons.Default.AddToQueue, Icons.Default.Add)
+        val selectedItem = remember { mutableStateOf(items[0])}
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            drawerContent = {
+                ModalDrawerSheet{
+                    Spacer(Modifier.height(12.dp))
+                    //temporary menu items
+                    items.forEach { item ->
+                        NavigationDrawerItem(
+                            icon = {Icon(item, contentDescription = null)},
+                            label = {Text(item.name)},
+                            selected = item == selectedItem.value,
+                            onClick = {
+                                scope.launch{drawerState.close()}
+                                selectedItem.value = item
+                                //TODO - Navigate to the corresponding page
+                            },
+                            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding))
+                    }
+                }
+            },
+            content = {
+                val mainview = Mainview()
 
-        //NAVIGATION
-        val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = "home") {
-            composable("home") { mainview.FolderView(playerToPass, navController = navController) }
-        }
-        navController.navigate("home")
+                //NAVIGATION
+                val navController = rememberNavController()
+                NavHost(navController = navController, startDestination = "home") {
+                    composable("home") { mainview.FolderView(playerToPass, navController = navController) }
+                }
+                navController.navigate("home")
+
+            }
+        )
     }
 }
