@@ -26,8 +26,7 @@ class Mainview {
     @ExperimentalComposeUiApi
     @ExperimentalFoundationApi
     @Composable
-
-    public fun FolderView(player: ExoPlayer, navController: NavController) {
+    fun FolderView(player: ExoPlayer, navController: NavController) {
         var isPlaying by remember { mutableStateOf(false) }
         val musicFolder = File("/storage/emulated/0/Music")
         var currentFolder by remember { mutableStateOf(musicFolder) }
@@ -87,7 +86,7 @@ class Mainview {
                                 }
                             })
                         {
-                                Text(text = "<-")
+                            Text(text = "<-")
                         }
                         Button(
                             //modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -240,7 +239,7 @@ class Mainview {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             onClick = {
-                                    currentFolder = audioFileCard
+                                currentFolder = audioFileCard
 
                             }) {
                             Text(

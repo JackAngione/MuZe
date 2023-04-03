@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
         val player = ExoPlayer.Builder(this).build()
         val mediaSession = MediaSession.Builder(this, player).build()
 
-            //END CREATE MEDIA PLAYER
+        //END CREATE MEDIA PLAYER
         setContent {
             MuZeCodeTheme {
                 // A surface container using the 'background' color from the theme
