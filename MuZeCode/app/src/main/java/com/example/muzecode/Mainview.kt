@@ -20,6 +20,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import java.io.File
+import androidx.compose.ui.graphics.Color
 
 class Mainview {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -27,6 +28,7 @@ class Mainview {
     @ExperimentalFoundationApi
     @Composable
     fun FolderView(player: ExoPlayer, navController: NavController) {
+
         var isPlaying by remember { mutableStateOf(false) }
         val musicFolder = File("/storage/emulated/0/Music")
         var currentFolder by remember { mutableStateOf(musicFolder) }
@@ -111,7 +113,8 @@ class Mainview {
                             })
                         {
 
-                            Text(text = "->")
+
+                        Text(text = "->")
                         }
                     }
                     //AUDIO SEEK BAR
