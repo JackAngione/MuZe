@@ -1,7 +1,6 @@
 package com.example.muzecode
 
 import android.net.Uri
-import android.provider.MediaStore.Audio.Media
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,19 +14,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import java.io.File
-import androidx.compose.ui.graphics.Color
 
 class Mainview {
     @OptIn(ExperimentalMaterial3Api::class)
     @ExperimentalComposeUiApi
+    @androidx.media3.common.util.UnstableApi
     @ExperimentalFoundationApi
     @Composable
-    fun FolderView(player: ExoPlayer, navController: NavController) {
+    fun  FolderView(player: ExoPlayer, navController: NavController) {
 
         var isPlaying by remember { mutableStateOf(false) }
         val musicFolder = File("/storage/emulated/0/Music")
@@ -43,20 +41,16 @@ class Mainview {
         }
         var playingFolderAudioFiles by remember{ mutableStateOf(currentFolderAudioFiles) }
         var playingSongIndex by remember{mutableStateOf(0)}
-        val playingSong by remember("")
-        {
-            derivedStateOf { playingFolderAudioFiles[playingSongIndex].name }
-        }
 
-        player.addListener(object: Player.Listener
-        {
-            override fun onMediaItemTransition(
-                mediaItem: MediaItem?,
-                @Player.MediaItemTransitionReason reason: Int,
-            ) {
-                //playingSong = player.currentMediaItem?.mediaMetadata?.title as String?
-            }
-        })
+        var playingSong by remember {
+            mutableStateOf("")
+        }
+        fun getCurrentlyPlayingFileName(exoPlayer: ExoPlayer): String? {
+            val mediaItem = exoPlayer.currentMediaItem ?: return null
+            val uri = mediaItem.playbackProperties?.uri ?: return null
+
+            return uri.path?.let { File(it).name }
+        }
 
         BottomSheetScaffold(
 
@@ -68,7 +62,7 @@ class Mainview {
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = playingSong.toString(),
+                        text = playingSong,
                         modifier = Modifier
                             .align(Alignment.CenterHorizontally)
                             .padding(bottom = 10.dp)
@@ -86,6 +80,7 @@ class Mainview {
                                 {
                                     playingSongIndex--
                                 }
+                                playingSong = getCurrentlyPlayingFileName(player).toString()
                             })
                         {
                             Text(text = "<-")
@@ -94,6 +89,7 @@ class Mainview {
                             //modifier = Modifier.align(Alignment.CenterHorizontally),
                             onClick = { isPlaying = !isPlaying })
                         {
+                            playingSong = getCurrentlyPlayingFileName(player).toString()
                             if (!isPlaying) {
                                 Text(text = "Play")
                                 player.pause()
@@ -110,6 +106,7 @@ class Mainview {
                                 {
                                     playingSongIndex++
                                 }
+                                playingSong = getCurrentlyPlayingFileName(player).toString()
                             })
                         {
 
@@ -148,20 +145,7 @@ class Mainview {
             }//end sheet content
         ) {
 
-            /* FUNCTION TO RECURSIVELY GET ALL AUDIO FILES IN A GIVEN FOLDER!!!!!!!!!!!!
-            fun getAudioFiles(folder: File): List<File> {
-                val audioFiles = mutableListOf<File>()
-                folder.listFiles()?.forEach { file ->
-                    if (file.isDirectory) {
-                        audioFiles.addAll(getAudioFiles(file))
-                    } else if (file.isFile && file.extension in arrayOf("mp3", "wav", "ogg", "aac")) {
-                        audioFiles.add(file)
-                    }
-                }
-                return audioFiles
-            } */
-
-            fun setFolderQueue(selectedIndex: Int)
+            fun setPlayerQueue(selectedIndex: Int)
             {
                 playingFolderAudioFiles = currentFolderAudioFiles
                 player.clearMediaItems()
@@ -171,7 +155,7 @@ class Mainview {
                 {
                     if(playingFolderAudioFiles[i].isDirectory || playingFolderAudioFiles[i].extension !in arrayOf("mp3", "wav", "ogg", "aac") )
                     {
-                        continue;
+                        continue
                     }
                     else
                     {
@@ -186,6 +170,7 @@ class Mainview {
                     player.seekToNextMediaItem()
                     playingSongIndex++
                 }
+                playingSong = getCurrentlyPlayingFileName(player).toString()
 
             }
 
@@ -196,7 +181,7 @@ class Mainview {
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
                         if(currentFolder != File("/storage/emulated/0/Music")) {
-                            currentFolder = currentFolder.parentFile
+                            currentFolder = currentFolder.parentFile as File
                             playingSongIndex = 0
                         }
                     })
@@ -223,7 +208,7 @@ class Mainview {
                                 }
                                 else
                                 {
-                                    setFolderQueue(index)
+                                    setPlayerQueue(index)
                                 }
                             }) {
                             Text(

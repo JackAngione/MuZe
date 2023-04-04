@@ -20,7 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import android.Manifest
 import android.content.Intent
+import android.os.Build
 import android.provider.ContactsContract
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.unit.dp
@@ -33,6 +35,7 @@ import com.google.accompanist.permissions.*
 
 class MainActivity : ComponentActivity() {
 
+    @RequiresApi(Build.VERSION_CODES.R)
     @OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -49,36 +52,21 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
-                ) {/*
-                    AndroidView(
-                        factory = { context ->
-                            val playerView = PlayerView(context)
-                            playerView.player = player
-                            /*
-                            val audioUri = Uri.parse("android.resource://${packageName}/raw/leni")
-                            //player.setMediaItem(MediaItem.fromUri(audioUri))
-                            //player.prepare()
-                            //player.play()
-                             */
-                            playerView
-                        },
-                        update = { playerView ->
-                            // Update the view if needed
-                        }
-                    )*/
+                ) {
                     //RUN PERMISSIONS CHECK
-                    permCheck(playerToPass = player)
+                    PermCheck(playerToPass = player)
                 }
             }
         }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.R)
 @OptIn(ExperimentalPermissionsApi::class)
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
 @Composable
-private fun permCheck(playerToPass: ExoPlayer) {
+private fun PermCheck(playerToPass: ExoPlayer) {
     var doNotShow by rememberSaveable{ mutableStateOf(false)}
     val storagePermissionState = rememberPermissionState(Manifest.permission.READ_EXTERNAL_STORAGE)
     val context = LocalContext.current
