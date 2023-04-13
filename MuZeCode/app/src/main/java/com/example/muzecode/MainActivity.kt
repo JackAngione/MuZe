@@ -3,10 +3,7 @@ package com.example.muzecode
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings.*
-import android.widget.SeekBar
 import androidx.activity.compose.setContent
-import com.example.muzecode.Mainview
-import android.content.pm.PackageManager
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
@@ -17,18 +14,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.viewinterop.AndroidView
 import android.Manifest
 import android.content.Intent
 import android.os.Build
-import android.provider.ContactsContract
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.unit.dp
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
-import androidx.media3.ui.PlayerView
 import androidx.navigation.compose.*
 import com.example.muzecode.ui.theme.MuZeCodeTheme
 import com.google.accompanist.permissions.*
@@ -65,8 +59,9 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalPermissionsApi::class)
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 @Composable
-private fun PermCheck(playerToPass: ExoPlayer) {
+private fun  PermCheck(playerToPass: ExoPlayer) {
     var doNotShow by rememberSaveable{ mutableStateOf(false)}
     val storagePermissionState = rememberPermissionState(Manifest.permission.READ_EXTERNAL_STORAGE)
     val context = LocalContext.current
@@ -147,13 +142,28 @@ private fun PermCheck(playerToPass: ExoPlayer) {
             }
         }
     ) { //will run once permission is granted
-        val mainview = Mainview()
 
+        val ui = UI_views()
+        val playerFunctionality = PlayerFunctionality()
+        /*
         //NAVIGATION
         val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = "home") {
-            composable("home") { mainview.FolderView(playerToPass, navController = navController) }
+        NavHost(
+            navController = navController,
+            startDestination = "home"
+        ) {
+            composable("home") { Text(text = "HOME") }
+            composable("folderView") { ui.folderView(
+                player = playerToPass,
+                playerFunctionality = playerFunctionality,
+                navController = navController
+            ) }
         }
-        navController.navigate("home")
+
+         */
+        //navController.navigate("home")
+
+        navDrawerUI(playerToPass, playerFunctionality)
+
     }
 }
