@@ -1,30 +1,26 @@
 package com.example.muzecode
 
-import androidx.compose.foundation.ExperimentalFoundationApi
+import android.net.Uri
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.media3.common.C
+import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.navigation.NavController
-import kotlinx.coroutines.delay
 import java.io.File
 
-class UI_views {
+class UIviews {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
-    fun folderView(
+    fun FolderView(
         player: ExoPlayer,
         playerFunctionality: PlayerFunctionality
     )
@@ -90,7 +86,7 @@ class UI_views {
 
                                 )
                             Spacer(modifier = Modifier.weight(1f))
-                            TrackDropDownMenu()
+                            TrackDropDownMenu(player = player, audioCard = audioFileCard)
                         }
                     }
                 }
@@ -133,7 +129,7 @@ class UI_views {
     }
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun allTracksView(player: ExoPlayer, playerFunctionality: PlayerFunctionality)
+    fun AllTracksView(player: ExoPlayer, playerFunctionality: PlayerFunctionality)
     {
         playerFunctionality.currentFolder = playerFunctionality.musicFolder
         LazyColumn(content =
@@ -155,7 +151,6 @@ class UI_views {
                                         playerFunctionality = playerFunctionality,
                                         index
                                     )
-
                             }) {
                             Row(modifier = Modifier
                                 .padding(16.dp)
@@ -168,9 +163,8 @@ class UI_views {
 
                                 )
                                 Spacer(modifier = Modifier.weight(1f))
-                                TrackDropDownMenu()
+                                TrackDropDownMenu(player = player, audioCard = audioFileCard)
                             }
-
                         }
                     }
                 }
@@ -181,20 +175,24 @@ class UI_views {
         )
     }
     @Composable
-    fun TrackDropDownMenu()
+    fun TrackDropDownMenu(
+        player: ExoPlayer,
+        audioCard: File
+    )
     {
         var expanded by remember { mutableStateOf(false) }
         Box {
             IconButton(onClick = { expanded = !expanded }) {
                 Icon(Icons.Default.MoreVert, contentDescription = "Open dropdown menu")
             }
-
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
                 modifier = Modifier.wrapContentSize()
             ) {
-                Button(onClick = { /*TODO*/ }) {
+                Button(onClick = {
+                    setNextInQueue(player = player, audioCard = audioCard)
+                }) {
                     Text(text = "Add to next in queue")
                 }
             }

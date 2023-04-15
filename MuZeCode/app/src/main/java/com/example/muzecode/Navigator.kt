@@ -10,7 +10,7 @@ import androidx.navigation.compose.composable
 
 @Composable
 fun MainNavigation(player: ExoPlayer, navController: NavController,  playerFunctionality: PlayerFunctionality) {
-    val ui = UI_views()
+    val ui = UIviews()
     NavHost(
         navController = navController as NavHostController,
         startDestination = "home"

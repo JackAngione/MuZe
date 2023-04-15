@@ -64,6 +64,13 @@ class PlayerFunctionality : ViewModel() {
         }
         playerFunctionality.playingSong = getCurrentlyPlayingFileName(player).toString()
     }
+    fun setNextInQueue(player: ExoPlayer, audioCard: File)
+    {
+        val currentIndex = player.currentMediaItemIndex
+        val audioUri = Uri.parse(audioCard.toString())
+        player.addMediaItem(currentIndex+1, MediaItem.fromUri(audioUri))
+    }
+
 
 
 
