@@ -25,16 +25,14 @@ class UI_views {
     @Composable
     @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     fun folderView(
-        player: ExoPlayer,
-
-        playerFunctionality: PlayerFunctionality,
-        navController: NavController
+        player: ExoPlayer
     )
     {
+        val playerFunctionality = remember {
+            PlayerFunctionality()
+        }
         BottomSheetScaffold(
             sheetContent = {
-                Text(text = "CONTROLS UI")
-
                 var isPlaying by remember { mutableStateOf(false) }
                 Column(
                     modifier = Modifier

@@ -15,14 +15,11 @@ import kotlinx.coroutines.delay
     @Composable
     fun ControlsUI(
         player: ExoPlayer,
-        playerFunctionality: PlayerFunctionality,
-        navController: NavController
+        playerFunctionality: PlayerFunctionality
         )
     {
         BottomSheetScaffold(
             sheetContent = {
-                Text(text = "CONTROLS UI")
-
                 var isPlaying by remember { mutableStateOf(false) }
                 Column(
                     modifier = Modifier

@@ -17,10 +17,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun navDrawerUI(
     player: ExoPlayer,
-    //navController: NavController,
-    playerFunctionality: PlayerFunctionality,
 )
 {
+    val playerFunctionality = PlayerFunctionality()
     val coroutineScope = rememberCoroutineScope()
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -35,18 +34,13 @@ fun navDrawerUI(
                     Button(onClick = {
 
                         navController.navigate("folderView") {
-                        // Pop up to the start destination of the graph to
-                        // avoid building up a large stack of destinations
-                        // on the back stack as users select items
+
                         navController.graph.startDestinationRoute?.let { route ->
                             popUpTo(route) {
                                 saveState = true
                             }
                         }
-                        // Avoid multiple copies of the same destination when
-                        // reselecting the same item
                         launchSingleTop = true
-                        // Restore state when reselecting a previously selected item
                         restoreState = true
                     }
                         coroutineScope.launch { drawerState.close() }
@@ -64,10 +58,7 @@ fun navDrawerUI(
                                         saveState = true
                                     }
                                 }
-                                // Avoid multiple copies of the same destination when
-                                // reselecting the same item
                                 launchSingleTop = true
-                                // Restore state when reselecting a previously selected item
                                 restoreState = true
                             }
 
@@ -78,20 +69,8 @@ fun navDrawerUI(
 
             }
         },
-        
     ) {
-        val ui = UI_views()
-        NavHost(
-            navController = navController,
-            startDestination = "home"
-        ) {
-            composable("home") { Text(text = "HOME") }
-            composable("folderView") { ui.folderView(
-                player = player,
-                playerFunctionality = playerFunctionality,
-                navController = navController
-            ) }
-        }
+        MainNavigation(player = player, navController = navController, playerFunctionality = playerFunctionality)
     }
 }
 

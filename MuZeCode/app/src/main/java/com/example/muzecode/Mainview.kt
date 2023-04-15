@@ -6,11 +6,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.lifecycle.ViewModel
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.navigation.NavController
 import java.io.File
-class PlayerFunctionality {
+class PlayerFunctionality : ViewModel() {
 
     val musicFolder = File("/storage/emulated/0/Music")
     var currentFolder by mutableStateOf(musicFolder)

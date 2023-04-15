@@ -143,27 +143,6 @@ private fun  PermCheck(playerToPass: ExoPlayer) {
         }
     ) { //will run once permission is granted
 
-        val ui = UI_views()
-        val playerFunctionality = PlayerFunctionality()
-        /*
-        //NAVIGATION
-        val navController = rememberNavController()
-        NavHost(
-            navController = navController,
-            startDestination = "home"
-        ) {
-            composable("home") { Text(text = "HOME") }
-            composable("folderView") { ui.folderView(
-                player = playerToPass,
-                playerFunctionality = playerFunctionality,
-                navController = navController
-            ) }
-        }
-
-         */
-        //navController.navigate("home")
-
-        navDrawerUI(playerToPass, playerFunctionality)
-
+        navDrawerUI(playerToPass)
     }
 }
