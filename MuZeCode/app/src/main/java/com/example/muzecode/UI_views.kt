@@ -3,6 +3,7 @@ package com.example.muzecode
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -18,117 +19,26 @@ import kotlinx.coroutines.delay
 import java.io.File
 
 class UI_views {
-
-    @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class,
-        ExperimentalFoundationApi::class
-    )
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     fun folderView(
-        player: ExoPlayer
+        player: ExoPlayer,
+        playerFunctionality: PlayerFunctionality
     )
     {
+        /*
         val playerFunctionality = remember {
+
             PlayerFunctionality()
         }
-        BottomSheetScaffold(
-            sheetContent = {
-                var isPlaying by remember { mutableStateOf(false) }
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = playerFunctionality.playingSong,
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(bottom = 10.dp)
-                    )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    )
-                    {
-                        Button(
-                            //modifier = Modifier.align(Alignment.CenterHorizontally),
-                            onClick = {
-                                player.seekToPreviousMediaItem()
-                                if (playerFunctionality.playingSongIndex > 0) {
-                                    playerFunctionality.playingSongIndex--
-                                }
-                                playerFunctionality.playingSong =
-                                    getCurrentlyPlayingFileName(player).toString()
-                            })
-                        {
-                            Text(text = "<-")
-                        }
-                        Button(
-                            //modifier = Modifier.align(Alignment.CenterHorizontally),
-                            onClick = { isPlaying = !isPlaying })
-                        {
-                            playerFunctionality.playingSong =
-                                getCurrentlyPlayingFileName(player).toString()
-                            if (!isPlaying) {
-                                Text(text = "Play")
-                                player.pause()
-                            } else {
-                                Text(text = "Pause")
-                                player.play()
-                            }
-                        }
-                        Button(
-                            //modifier = Modifier.align(Alignment.CenterHorizontally),
-                            onClick = {
-                                player.seekToNextMediaItem()
-                                if (playerFunctionality.playingSongIndex < playerFunctionality.currentFolderAudioFiles.size - 1) {
-                                    playerFunctionality.playingSongIndex++
-                                }
-                                playerFunctionality.playingSong =
-                                    getCurrentlyPlayingFileName(player).toString()
-                            })
-                        {
-
-
-                            Text(text = "->")
-                        }
-                    }
-                    //AUDIO SEEK BAR
-                    var sliderPosition by remember { mutableStateOf(0f) }
-                    val duration = player.duration
-
-                    LaunchedEffect(player) {
-                        while (true) {
-                            sliderPosition = player.currentPosition.toFloat()
-                            delay(16)
-                        }
-                    }
-                    Slider(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = sliderPosition,
-
-                        onValueChange = { newPosition ->
-                            player.seekTo(newPosition.toLong())
-                        },
-                        valueRange =
-                        if (duration != C.TIME_UNSET) {
-                            0f..duration.toFloat()
-                        } else {
-                            0f..100f // if audio isn't playing, fallback range
-                        },
-                    )
-                }
-
-
-            }
-        )
-        //BACKGROUND CONTENT
-        {
+        */
             //START FOLDER LIST UI
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
+
+
                 item {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -165,6 +75,7 @@ class UI_views {
                                 if (audioFileCard.isDirectory) {
                                     playerFunctionality.currentFolder = audioFileCard
                                 } else {
+                                    playerFunctionality.playingFolderAudioFiles = playerFunctionality.currentFolderAudioFiles
                                     setPlayerQueue(
                                         player = player,
                                         playerFunctionality = playerFunctionality,
@@ -205,7 +116,59 @@ class UI_views {
                 }
 
             }
+    }
+    private fun getAudioFiles(folder: File): List<File> {
+        val audioFiles = mutableListOf<File>()
+        folder.listFiles()?.forEach { file ->
+            if (file.isDirectory) {
+                audioFiles.addAll(getAudioFiles(file))
+            } else if (file.isFile && file.extension in arrayOf("mp3", "wav", "ogg", "aac")) {
+                audioFiles.add(file)
+            }
         }
-        //ControlsUI(player = player, playerFunctionality = playerFunctionality, navController = navController)
+        return audioFiles
+    }
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun allTracksView(player: ExoPlayer, playerFunctionality: PlayerFunctionality)
+    {
+        playerFunctionality.currentFolder = playerFunctionality.musicFolder
+        LazyColumn(content =
+            {
+                playerFunctionality.playingFolderAudioFiles = getAudioFiles(playerFunctionality.currentFolder)
+                itemsIndexed(playerFunctionality.playingFolderAudioFiles) { index, audioFileCard ->
+                    if (audioFileCard.extension in arrayOf(
+                            "mp3",
+                            "wav",
+                            "ogg",
+                            "aac"
+                        ) || audioFileCard.isDirectory
+                    ) {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+                                    setPlayerQueue(
+                                        player = player,
+                                        playerFunctionality = playerFunctionality,
+                                        index
+                                    )
+
+                            }) {
+                            Text(
+                                text = audioFileCard.name,
+                                fontSize = 18.sp,
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .align(Alignment.CenterHorizontally)
+                            )
+                        }
+                    }
+                }
+                item {
+                    Spacer(modifier = Modifier.height(80.dp))
+                }
+            }
+        )
+
     }
 }

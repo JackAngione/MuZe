@@ -12,7 +12,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.navigation.NavController
 import java.io.File
 class PlayerFunctionality : ViewModel() {
-
+    var currentView by mutableStateOf(false)
     val musicFolder = File("/storage/emulated/0/Music")
     var currentFolder by mutableStateOf(musicFolder)
     val currentFolderFiles by derivedStateOf { currentFolder.listFiles() }
@@ -35,38 +35,14 @@ class PlayerFunctionality : ViewModel() {
 
         return uri.path?.let { File(it).name }
     }
-    @OptIn(ExperimentalMaterial3Api::class)
-    @ExperimentalComposeUiApi
-    @androidx.media3.common.util.UnstableApi
-    @ExperimentalFoundationApi
-    @Composable
-    fun  PlayerBaseFunctionality(player: ExoPlayer) {
-        val musicFolder = File("/storage/emulated/0/Music")
-        val currentFolder by remember { mutableStateOf(musicFolder) }
-        val currentFolderFiles by remember(currentFolder)
-        {
-            derivedStateOf { currentFolder.listFiles() }
-        }
-        val currentFolderAudioFiles by remember(currentFolder.listFiles()){
-            derivedStateOf { currentFolder.listFiles().filter { file ->
-                file.isFile && file.extension in arrayOf("mp3", "wav", "ogg", "aac")
-            }.sortedBy {it.name} }
-        }
-        var playingFolderAudioFiles by remember{ mutableStateOf(currentFolderAudioFiles) }
-        val playingSongIndex = remember{mutableStateOf(0)}
 
-        val playingSong = remember {
-            mutableStateOf("")
-        }
-
-    }
     fun setPlayerQueue (
         player: ExoPlayer,
         playerFunctionality: PlayerFunctionality,
         selectedIndex: Int
     )
     {
-        playerFunctionality.playingFolderAudioFiles = playerFunctionality.currentFolderAudioFiles
+        //playerFunctionality.playingFolderAudioFiles = playerFunctionality.currentFolderAudioFiles
         player.clearMediaItems()
         playerFunctionality.playingSongIndex = 0
         val mediaItems = mutableListOf<MediaItem>()

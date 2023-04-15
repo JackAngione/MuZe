@@ -1,5 +1,6 @@
 package com.example.muzecode
 
+import android.service.controls.Control
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -71,6 +72,7 @@ fun navDrawerUI(
         },
     ) {
         MainNavigation(player = player, navController = navController, playerFunctionality = playerFunctionality)
+        //
     }
 }
 

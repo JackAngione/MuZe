@@ -10,14 +10,16 @@ import androidx.media3.common.C
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
-
+val ui = UI_views()
 @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun ControlsUI(
         player: ExoPlayer,
-        playerFunctionality: PlayerFunctionality
         )
     {
+        val playerFunctionality = remember {
+            PlayerFunctionality()
+        }
         BottomSheetScaffold(
             sheetContent = {
                 var isPlaying by remember { mutableStateOf(false) }
@@ -27,6 +29,15 @@ import kotlinx.coroutines.delay
                         .padding(16.dp),
                     verticalArrangement = Arrangement.Center
                 ) {
+                    //TOGGLE BETWEEN ALL TRACKS AND FOLDER VIEW
+                    Text(text = "TrackView / FolderView")
+                    Switch(
+                        checked = playerFunctionality.currentView,
+                        onCheckedChange = {
+                            playerFunctionality.currentView = it
+
+                        }
+                    )
                     Text(
                         text = playerFunctionality.playingSong,
                         modifier = Modifier
@@ -38,6 +49,7 @@ import kotlinx.coroutines.delay
                         horizontalArrangement = Arrangement.Center
                     )
                     {
+
                         Button(
                             //modifier = Modifier.align(Alignment.CenterHorizontally),
                             onClick = {
@@ -106,12 +118,18 @@ import kotlinx.coroutines.delay
                         },
                     )
                 }
-                
-
             }
         )
         //BACKGROUND CONTENT
         {
+            if(playerFunctionality.currentView == true)
+            {
+                ui.folderView(player = player,  playerFunctionality = playerFunctionality)
+            }
+            else
+            {
+                ui.allTracksView(player = player, playerFunctionality = playerFunctionality)
+            }
             //navController.currentDestination
         }
 
