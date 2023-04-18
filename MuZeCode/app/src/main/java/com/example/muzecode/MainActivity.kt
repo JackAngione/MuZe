@@ -3,10 +3,7 @@ package com.example.muzecode
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings.*
-import android.widget.SeekBar
 import androidx.activity.compose.setContent
-import com.example.muzecode.Mainview
-import android.content.pm.PackageManager
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
@@ -17,11 +14,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.viewinterop.AndroidView
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.provider.ContactsContract
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -29,7 +26,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.unit.dp
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
-import androidx.media3.ui.PlayerView
 import androidx.navigation.compose.*
 import com.example.muzecode.ui.theme.MuZeCodeTheme
 import com.google.accompanist.permissions.*
@@ -37,6 +33,7 @@ import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
+    @RequiresApi(Build.VERSION_CODES.R)
     @OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -46,32 +43,16 @@ class MainActivity : ComponentActivity() {
         val player = ExoPlayer.Builder(this).build()
         val mediaSession = MediaSession.Builder(this, player).build()
 
-            //END CREATE MEDIA PLAYER
+        //END CREATE MEDIA PLAYER
         setContent {
             MuZeCodeTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
-                ) {/*
-                    AndroidView(
-                        factory = { context ->
-                            val playerView = PlayerView(context)
-                            playerView.player = player
-                            /*
-                            val audioUri = Uri.parse("android.resource://${packageName}/raw/leni")
-                            //player.setMediaItem(MediaItem.fromUri(audioUri))
-                            //player.prepare()
-                            //player.play()
-                             */
-                            playerView
-                        },
-                        update = { playerView ->
-                            // Update the view if needed
-                        }
-                    )*/
+                ) {
                     //RUN PERMISSIONS CHECK
-                    permCheck(playerToPass = player)
+                    PermCheck(playerToPass = player)
                 }
             }
         }
@@ -79,11 +60,13 @@ class MainActivity : ComponentActivity() {
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
+@RequiresApi(Build.VERSION_CODES.R)
+@OptIn(ExperimentalPermissionsApi::class)
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 @Composable
-private fun permCheck(playerToPass: ExoPlayer) {
+private fun  PermCheck(playerToPass: ExoPlayer) {
     var doNotShow by rememberSaveable{ mutableStateOf(false)}
     val storagePermissionState = rememberPermissionState(Manifest.permission.READ_EXTERNAL_STORAGE)
     val context = LocalContext.current
@@ -164,41 +147,6 @@ private fun permCheck(playerToPass: ExoPlayer) {
             }
         }
     ) { //will run once permission is granted
-        val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-        val scope = rememberCoroutineScope()
-        val items = listOf(Icons.Default.Favorite, Icons.Default.AddToQueue, Icons.Default.Add)
-        val selectedItem = remember { mutableStateOf(items[0])}
-        ModalNavigationDrawer(
-            drawerState = drawerState,
-            drawerContent = {
-                ModalDrawerSheet{
-                    Spacer(Modifier.height(12.dp))
-                    //temporary menu items
-                    items.forEach { item ->
-                        NavigationDrawerItem(
-                            icon = {Icon(item, contentDescription = null)},
-                            label = {Text(item.name)},
-                            selected = item == selectedItem.value,
-                            onClick = {
-                                scope.launch{drawerState.close()}
-                                selectedItem.value = item
-                                //TODO - Navigate to the corresponding page
-                            },
-                            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding))
-                    }
-                }
-            },
-            content = {
-                val mainview = Mainview()
-
-                //NAVIGATION
-                val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = "home") {
-                    composable("home") { mainview.FolderView(playerToPass, navController = navController) }
-                }
-                navController.navigate("home")
-
-            }
-        )
+        navDrawerUI(playerToPass)
     }
 }
