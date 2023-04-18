@@ -16,8 +16,9 @@ fun MainNavigation(player: ExoPlayer, navController: NavController,  playerFunct
         startDestination = "home"
     )
     {
-        composable("search") { Text(text = "SEARCH BAR & RESULTS") }
+        composable("search") { Text(text = "SEARCH BAR & RESULTS") } //should be similar to folderview but with search function
         composable("home") { Text(text = "HOME") }
         composable("folderView") { ControlsUI(player = player) }
+        composable("queue") { Text(text = "QUEUE MANAGER") } //should be similar to folderview as well
     }
 }

@@ -61,7 +61,7 @@ fun navDrawerUI(
                         restoreState = true
                     }
                     }) {
-                        Text(text = "nav1")
+                        Text(text = "Songs")
                     }
                     Button(
                         onClick =
@@ -79,7 +79,23 @@ fun navDrawerUI(
                             }
 
                     }) {
-                        Text(text = "nav2")
+                        Text(text = "Home")
+                    }
+                    Button(onClick = {
+                        coroutineScope.launch { drawerState.close() }
+                        navController.navigate("queue")
+                        {
+                            navController.graph.startDestinationRoute?.let { route ->
+                                popUpTo(route) {
+                                    saveState = true
+                                }
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+
+                    }) {
+                        Text(text = "Queue")
                     }
                 }
 
