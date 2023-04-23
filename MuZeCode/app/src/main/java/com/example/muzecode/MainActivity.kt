@@ -42,6 +42,7 @@ class MainActivity : ComponentActivity() {
         //CREATE MEDIA PLAYER
         val player = ExoPlayer.Builder(this).build()
         val mediaSession = MediaSession.Builder(this, player).build()
+        val backgroundColor =
 
         //END CREATE MEDIA PLAYER
         setContent {

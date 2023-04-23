@@ -1,6 +1,7 @@
 package com.example.muzecode
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -15,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import androidx.media3.common.C
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.navigation.NavController
+import com.example.muzecode.ui.theme.MidGrey40
 import kotlinx.coroutines.delay
 import java.io.File
 
@@ -35,7 +37,7 @@ class UI_views {
         */
             //START FOLDER LIST UI
             LazyColumn(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize().background(color = MidGrey40)
             ) {
 
 
@@ -133,7 +135,9 @@ class UI_views {
     fun allTracksView(player: ExoPlayer, playerFunctionality: PlayerFunctionality)
     {
         playerFunctionality.currentFolder = playerFunctionality.musicFolder
-        LazyColumn(content =
+        LazyColumn(
+            modifier = Modifier.background(color = MidGrey40),
+            content =
             {
                 playerFunctionality.playingFolderAudioFiles = getAudioFiles(playerFunctionality.currentFolder)
                 itemsIndexed(playerFunctionality.playingFolderAudioFiles) { index, audioFileCard ->
