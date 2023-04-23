@@ -1,5 +1,6 @@
 package com.example.muzecode
 
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.media3.exoplayer.ExoPlayer
@@ -16,7 +17,7 @@ fun MainNavigation(player: ExoPlayer, navController: NavController,  playerFunct
         startDestination = "home"
     )
     {
-        composable("search") { Text(text = "SEARCH BAR & RESULTS") } //should be similar to folderview but with search function
+        composable("search") { OutlinedTextField(value = "", onValueChange = {}, placeholder = {Text("Implement Search")}) } //should be similar to folderview but with search function
         composable("home") { Text(text = "HOME") }
         composable("folderView") { ControlsUI(player = player) }
         composable("queue") { Text(text = "QUEUE MANAGER") } //should be similar to folderview as well

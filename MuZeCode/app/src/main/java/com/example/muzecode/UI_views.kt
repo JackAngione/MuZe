@@ -16,7 +16,9 @@ import androidx.compose.ui.unit.sp
 import androidx.media3.common.C
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.navigation.NavController
+import com.example.muzecode.ui.theme.BlueGrey40
 import com.example.muzecode.ui.theme.MidGrey40
+import com.example.muzecode.ui.theme.MuZeCodeTheme
 import kotlinx.coroutines.delay
 import java.io.File
 
@@ -37,13 +39,19 @@ class UI_views {
         */
             //START FOLDER LIST UI
             LazyColumn(
-                modifier = Modifier.fillMaxSize().background(color = MidGrey40)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = MaterialTheme.colorScheme.background)
             ) {
 
 
                 item {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.secondary,
+                            contentColor = MaterialTheme.colorScheme.background
+                        ),
                         onClick = {
                             if (playerFunctionality.currentFolder != File("/storage/emulated/0/Music")) {
                                 playerFunctionality.currentFolder =
@@ -72,6 +80,10 @@ class UI_views {
                     ) {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                contentColor = MaterialTheme.colorScheme.background
+                            ),
                             onClick = {
 
                                 if (audioFileCard.isDirectory) {
@@ -99,6 +111,10 @@ class UI_views {
                     if (audioFileCard.isDirectory) {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                contentColor = MaterialTheme.colorScheme.background
+                            ),
                             onClick = {
                                 playerFunctionality.currentFolder = audioFileCard
 
@@ -136,7 +152,7 @@ class UI_views {
     {
         playerFunctionality.currentFolder = playerFunctionality.musicFolder
         LazyColumn(
-            modifier = Modifier.background(color = MidGrey40),
+            modifier = Modifier.background(color = MaterialTheme.colorScheme.background),
             content =
             {
                 playerFunctionality.playingFolderAudioFiles = getAudioFiles(playerFunctionality.currentFolder)
@@ -150,6 +166,10 @@ class UI_views {
                     ) {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                contentColor = MaterialTheme.colorScheme.background
+                            ),
                             onClick = {
                                     setPlayerQueue(
                                         player = player,

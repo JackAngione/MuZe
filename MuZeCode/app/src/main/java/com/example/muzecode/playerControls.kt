@@ -36,7 +36,10 @@ val ui = UI_views()
                         onCheckedChange = {
                             playerFunctionality.currentView = it
 
-                        }
+                        },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = MaterialTheme.colorScheme.tertiary
+                        )
                     )
                     Text(
                         text = playerFunctionality.playingSong,
@@ -105,6 +108,9 @@ val ui = UI_views()
                     }
                     Slider(
                         modifier = Modifier.fillMaxWidth(),
+                        colors = SliderDefaults.colors(
+                            thumbColor = MaterialTheme.colorScheme.tertiary
+                        ),
                         value = sliderPosition,
 
                         onValueChange = { newPosition ->
