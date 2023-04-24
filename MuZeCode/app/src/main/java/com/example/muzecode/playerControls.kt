@@ -8,9 +8,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.C
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.navigation.NavController
 import kotlinx.coroutines.delay
-val ui = UI_views()
+val ui = UIviews()
 @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun ControlsUI(
@@ -130,11 +129,11 @@ val ui = UI_views()
         {
             if(playerFunctionality.currentView == true)
             {
-                ui.folderView(player = player,  playerFunctionality = playerFunctionality)
+                ui.FolderView(player = player,  playerFunctionality = playerFunctionality)
             }
             else
             {
-                ui.allTracksView(player = player, playerFunctionality = playerFunctionality)
+                ui.AllTracksView(player = player, playerFunctionality = playerFunctionality)
             }
             //navController.currentDestination
         }
