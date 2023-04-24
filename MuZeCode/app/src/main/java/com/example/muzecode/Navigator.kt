@@ -18,6 +18,8 @@ fun MainNavigation(player: ExoPlayer, navController: NavController,  playerFunct
     {
         composable("home") { Text(text = "HOME") }
 
-        composable("folderView") { ControlsUI(player = player) }
+        composable("musicfiles") { ControlsUI(player = player) }
+
+        composable("serverfiles") { ControlsUI(player = player) }
     }
 }

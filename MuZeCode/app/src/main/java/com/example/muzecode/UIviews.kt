@@ -116,17 +116,7 @@ class UIviews {
 
         }
     }
-    private fun getAudioFiles(folder: File): List<File> {
-        val audioFiles = mutableListOf<File>()
-        folder.listFiles()?.forEach { file ->
-            if (file.isDirectory) {
-                audioFiles.addAll(getAudioFiles(file))
-            } else if (file.isFile && file.extension in arrayOf("mp3", "wav", "ogg", "aac")) {
-                audioFiles.add(file)
-            }
-        }
-        return audioFiles
-    }
+
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun AllTracksView(player: ExoPlayer, playerFunctionality: PlayerFunctionality)
@@ -174,6 +164,13 @@ class UIviews {
             }
         )
     }
+
+    @Composable
+    fun ServerView(player: ExoPlayer, playerFunctionality: PlayerFunctionality)
+    {
+
+    }
+
     @Composable
     fun TrackDropDownMenu(
         player: ExoPlayer,
@@ -197,6 +194,17 @@ class UIviews {
                 }
             }
         }
+    }
+    private fun getAudioFiles(folder: File): List<File> {
+        val audioFiles = mutableListOf<File>()
+        folder.listFiles()?.forEach { file ->
+            if (file.isDirectory) {
+                audioFiles.addAll(getAudioFiles(file))
+            } else if (file.isFile && file.extension in arrayOf("mp3", "wav", "ogg", "aac")) {
+                audioFiles.add(file)
+            }
+        }
+        return audioFiles
     }
 
 }

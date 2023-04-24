@@ -30,24 +30,9 @@ fun navDrawerUI(
         drawerContent = {
             ModalDrawerSheet {
                 Spacer(Modifier.height(12.dp))
-                Text(text = "NAVIGATION DRAWER")
+                Text(text = "NAVIGATION DRAWER", modifier = Modifier.padding(10.dp))
                 Column() {
-                    Button(onClick = {
 
-                        navController.navigate("folderView") {
-
-                        navController.graph.startDestinationRoute?.let { route ->
-                            popUpTo(route) {
-                                saveState = true
-                            }
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                        coroutineScope.launch { drawerState.close() }
-                    }) {
-                        Text(text = "nav1")
-                    }
                     Button(
                         onClick =
                         {
@@ -64,7 +49,23 @@ fun navDrawerUI(
                             }
 
                     }) {
-                        Text(text = "nav2")
+                        Text(text = "Home")
+                    }
+                    Button(onClick = {
+
+                        navController.navigate("musicfiles") {
+
+                            navController.graph.startDestinationRoute?.let { route ->
+                                popUpTo(route) {
+                                    saveState = true
+                                }
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                        coroutineScope.launch { drawerState.close() }
+                    }) {
+                        Text(text = "Music Files")
                     }
                 }
 
