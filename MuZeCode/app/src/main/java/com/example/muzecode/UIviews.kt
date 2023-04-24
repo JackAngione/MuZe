@@ -1,6 +1,7 @@
 package com.example.muzecode
 
 import android.net.Uri
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -12,9 +13,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.media3.common.MediaItem
+
 import androidx.media3.exoplayer.ExoPlayer
 import java.io.File
+import com.example.muzecode.ui.theme.MuZeCodeTheme
 
 class UIviews {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -27,13 +29,19 @@ class UIviews {
     {
         //START FOLDER LIST UI
         LazyColumn(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = MaterialTheme.colorScheme.background)
         ) {
 
 
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.background
+                    ),
                     onClick = {
                         if (playerFunctionality.currentFolder != File("/storage/emulated/0/Music")) {
                             playerFunctionality.currentFolder =
@@ -62,6 +70,10 @@ class UIviews {
                 ) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.secondary,
+                            contentColor = MaterialTheme.colorScheme.background
+                        ),
                         onClick = {
 
                             if (audioFileCard.isDirectory) {
@@ -95,6 +107,10 @@ class UIviews {
                 if (audioFileCard.isDirectory) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.secondary,
+                            contentColor = MaterialTheme.colorScheme.background
+                        ),
                         onClick = {
                             playerFunctionality.currentFolder = audioFileCard
 
@@ -122,7 +138,9 @@ class UIviews {
     fun AllTracksView(player: ExoPlayer, playerFunctionality: PlayerFunctionality)
     {
         playerFunctionality.currentFolder = playerFunctionality.musicFolder
-        LazyColumn(content =
+        LazyColumn(
+            modifier = Modifier.background(color = MaterialTheme.colorScheme.background),
+            content =
             {
                 playerFunctionality.playingFolderAudioFiles = getAudioFiles(playerFunctionality.currentFolder)
                 itemsIndexed(playerFunctionality.playingFolderAudioFiles) { index, audioFileCard ->
@@ -135,6 +153,10 @@ class UIviews {
                     ) {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                contentColor = MaterialTheme.colorScheme.background
+                            ),
                             onClick = {
                                     setPlayerQueue(
                                         player = player,
