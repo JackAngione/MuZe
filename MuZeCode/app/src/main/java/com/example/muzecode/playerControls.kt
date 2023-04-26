@@ -1,27 +1,42 @@
 package com.example.muzecode
 
+import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 import androidx.media3.common.C
 import androidx.media3.exoplayer.ExoPlayer
 import kotlinx.coroutines.delay
-val ui = UIviews()
-@OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun ControlsUI(
-        player: ExoPlayer,
-        )
+class PlayerControls: ViewModel()
+{
+    private lateinit var player: ExoPlayer
+
+
+    fun getPlayer(context: Context)
     {
+        player = ExoPlayer.Builder(context).build()
+        player.playWhenReady = true
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        player.release()
+    }
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun ControlsUI()
+    {
+        val ui = UIviews()
         val playerFunctionality = remember {
             PlayerFunctionality()
         }
         BottomSheetScaffold(
             sheetContent = {
-                var isPlaying by remember { mutableStateOf(false) }
+                var isPlaying by remember { mutableStateOf(true) }
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -60,7 +75,7 @@ val ui = UIviews()
                                     playerFunctionality.playingSongIndex--
                                 }
                                 playerFunctionality.playingSong =
-                                    getCurrentlyPlayingFileName(player).toString()
+                                    playerFunctionality.getCurrentlyPlayingFileName(player).toString()
                             })
                         {
                             Text(text = "<-")
@@ -70,7 +85,7 @@ val ui = UIviews()
                             onClick = { isPlaying = !isPlaying })
                         {
                             playerFunctionality.playingSong =
-                                getCurrentlyPlayingFileName(player).toString()
+                                playerFunctionality.getCurrentlyPlayingFileName(player).toString()
                             if (!isPlaying) {
                                 Text(text = "Play")
                                 player.pause()
@@ -87,7 +102,7 @@ val ui = UIviews()
                                     playerFunctionality.playingSongIndex++
                                 }
                                 playerFunctionality.playingSong =
-                                    getCurrentlyPlayingFileName(player).toString()
+                                    playerFunctionality.getCurrentlyPlayingFileName(player).toString()
                             })
                         {
 
@@ -127,7 +142,7 @@ val ui = UIviews()
         )
         //BACKGROUND CONTENT
         {
-            if(playerFunctionality.currentView == true)
+            if(playerFunctionality.currentView)
             {
                 ui.FolderView(player = player,  playerFunctionality = playerFunctionality)
             }
@@ -139,3 +154,5 @@ val ui = UIviews()
         }
 
     }
+}
+

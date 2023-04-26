@@ -18,20 +18,21 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.unit.dp
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.session.MediaSession
 import androidx.navigation.compose.*
 import com.example.muzecode.ui.theme.MuZeCodeTheme
 import com.google.accompanist.permissions.*
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+    //private lateinit var player: ExoPlayer
+    private val playerControls: PlayerControls by viewModels()
+    private val nav: Navigation by viewModels()
 
     @RequiresApi(Build.VERSION_CODES.R)
     @OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
@@ -40,9 +41,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         //CREATE MEDIA PLAYER
-        val player = ExoPlayer.Builder(this).build()
-        val mediaSession = MediaSession.Builder(this, player).build()
-        val backgroundColor =
+        playerControls.getPlayer(this)
+        //val player = ExoPlayer.Builder(this).build()
+        //val mediaSession = MediaSession.Builder(this, player).build()
 
         //END CREATE MEDIA PLAYER
         setContent {
@@ -53,7 +54,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     //RUN PERMISSIONS CHECK
-                    PermCheck(playerToPass = player)
+                    PermCheck(nav = nav, playerControls = playerControls)
                 }
             }
         }
@@ -67,7 +68,7 @@ class MainActivity : ComponentActivity() {
 @ExperimentalComposeUiApi
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 @Composable
-private fun  PermCheck(playerToPass: ExoPlayer) {
+private fun  PermCheck(nav: Navigation, playerControls: PlayerControls) {
     var doNotShow by rememberSaveable{ mutableStateOf(false)}
     val storagePermissionState = rememberPermissionState(Manifest.permission.READ_EXTERNAL_STORAGE)
     val context = LocalContext.current
@@ -148,6 +149,6 @@ private fun  PermCheck(playerToPass: ExoPlayer) {
             }
         }
     ) { //will run once permission is granted
-        navDrawerUI(playerToPass)
+        nav.navDrawerUI(playerControls = playerControls)
     }
 }

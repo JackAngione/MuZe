@@ -1,6 +1,5 @@
 package com.example.muzecode
 
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,12 +12,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
+import androidx.lifecycle.ViewModel
 import androidx.media3.exoplayer.ExoPlayer
 import java.io.File
-import com.example.muzecode.ui.theme.MuZeCodeTheme
 
-class UIviews {
+class UIviews: ViewModel(){
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
@@ -80,7 +78,7 @@ class UIviews {
                                 playerFunctionality.currentFolder = audioFileCard
                             } else {
                                 playerFunctionality.playingFolderAudioFiles = playerFunctionality.currentFolderAudioFiles
-                                setPlayerQueue(
+                                playerFunctionality.setPlayerQueue(
                                     player = player,
                                     playerFunctionality = playerFunctionality,
                                     index
@@ -98,7 +96,7 @@ class UIviews {
 
                                 )
                             Spacer(modifier = Modifier.weight(1f))
-                            TrackDropDownMenu(player = player, audioCard = audioFileCard)
+                            TrackDropDownMenu(playerFunctionality = playerFunctionality, player = player, audioCard = audioFileCard)
                         }
                     }
                 }
@@ -158,7 +156,7 @@ class UIviews {
                                 contentColor = MaterialTheme.colorScheme.background
                             ),
                             onClick = {
-                                    setPlayerQueue(
+                                playerFunctionality.setPlayerQueue(
                                         player = player,
                                         playerFunctionality = playerFunctionality,
                                         index
@@ -175,7 +173,7 @@ class UIviews {
 
                                 )
                                 Spacer(modifier = Modifier.weight(1f))
-                                TrackDropDownMenu(player = player, audioCard = audioFileCard)
+                                TrackDropDownMenu(playerFunctionality = playerFunctionality, player = player, audioCard = audioFileCard)
                             }
                         }
                     }
@@ -196,7 +194,8 @@ class UIviews {
     @Composable
     fun TrackDropDownMenu(
         player: ExoPlayer,
-        audioCard: File
+        audioCard: File,
+        playerFunctionality: PlayerFunctionality
     )
     {
         var expanded by remember { mutableStateOf(false) }
@@ -210,7 +209,7 @@ class UIviews {
                 modifier = Modifier.wrapContentSize()
             ) {
                 Button(onClick = {
-                    setNextInQueue(player = player, audioCard = audioCard)
+                    playerFunctionality.setNextInQueue(player = player, audioCard = audioCard)
                 }) {
                     Text(text = "Add to next in queue")
                 }

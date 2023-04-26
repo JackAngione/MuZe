@@ -23,8 +23,6 @@ class PlayerFunctionality : ViewModel() {
     var playingSongIndex by  mutableStateOf(0)
 
     var playingSong by mutableStateOf("")
-
-}
     @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     fun  getCurrentlyPlayingFileName(exoPlayer: ExoPlayer): String? {
         val mediaItem = exoPlayer.currentMediaItem ?: return ""
@@ -74,3 +72,5 @@ class PlayerFunctionality : ViewModel() {
 
 
 
+
+}
