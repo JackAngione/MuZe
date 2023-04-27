@@ -12,7 +12,9 @@
         android:theme="@style/Theme.MuZeCode"
         tools:targetApi="31"
         android:requestLegacyExternalStorage="true">
-
+        <service
+            android:name=".NotificationCancelService"
+            android:stopWithTask="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

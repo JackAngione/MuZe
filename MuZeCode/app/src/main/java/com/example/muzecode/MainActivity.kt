@@ -28,18 +28,19 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.navigation.compose.*
 import com.example.muzecode.ui.theme.MuZeCodeTheme
 import com.google.accompanist.permissions.*
+import com.google.android.gms.cast.framework.MediaNotificationManager
 
 class MainActivity : ComponentActivity() {
     //private lateinit var player: ExoPlayer
     private val playerControls: PlayerControls by viewModels()
     private val nav: Navigation by viewModels()
-
     @RequiresApi(Build.VERSION_CODES.R)
     @OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-
+        val intent = Intent(this, NotificationCancelService::class.java)
+        this.startService(intent)
         //CREATE MEDIA PLAYER
         playerControls.getPlayer(this)
         //val player = ExoPlayer.Builder(this).build()
@@ -149,6 +150,7 @@ private fun  PermCheck(nav: Navigation, playerControls: PlayerControls) {
             }
         }
     ) { //will run once permission is granted
+
         nav.navDrawerUI(playerControls = playerControls)
     }
 }

@@ -1,5 +1,7 @@
 package com.example.muzecode
 
+import android.app.Notification
+import android.app.PendingIntent
 import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -8,24 +10,49 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.media3.common.C
+import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.session.MediaSession
+import androidx.media3.ui.PlayerNotificationManager
 import kotlinx.coroutines.delay
 class PlayerControls: ViewModel()
 {
     private lateinit var player: ExoPlayer
 
-
+    private lateinit var notificationManager: MediaNotificationManager
+    @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     fun getPlayer(context: Context)
     {
         player = ExoPlayer.Builder(context).build()
-        player.playWhenReady = true
+        
+        val sessionActivityPendingIntent =
+            context.packageManager?.getLaunchIntentForPackage(context.packageName)?.let { sessionIntent ->
+                PendingIntent.getActivity(context, 0, sessionIntent, PendingIntent.FLAG_IMMUTABLE)
+            }
+        val mediaSession = MediaSession.Builder(context, player)
+            .setSessionActivity(sessionActivityPendingIntent!!).build()
+
+        notificationManager =
+            MediaNotificationManager(
+                context,
+                mediaSession.token,
+                player,
+                PlayerNotificationListener()
+            )
+    }
+    @UnstableApi private inner class PlayerNotificationListener :
+        PlayerNotificationManager.NotificationListener {
+        override fun onNotificationPosted(
+            notificationId: Int,
+            notification: Notification,
+            ongoing: Boolean
+        ) {
+        }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        player.release()
-    }
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun ControlsUI()
@@ -37,6 +64,13 @@ class PlayerControls: ViewModel()
         BottomSheetScaffold(
             sheetContent = {
                 var isPlaying by remember { mutableStateOf(true) }
+
+                LaunchedEffect(player) {
+                    if(!player.isPlaying)
+                    {
+                        isPlaying = false
+                    }
+                }
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -66,7 +100,7 @@ class PlayerControls: ViewModel()
                         horizontalArrangement = Arrangement.Center
                     )
                     {
-
+                        //Previous Song Button
                         Button(
                             //modifier = Modifier.align(Alignment.CenterHorizontally),
                             onClick = {
@@ -80,22 +114,29 @@ class PlayerControls: ViewModel()
                         {
                             Text(text = "<-")
                         }
+                        //PLAY/PAUSE BUTTON
                         Button(
-                            //modifier = Modifier.align(Alignment.CenterHorizontally),
-                            onClick = { isPlaying = !isPlaying })
+                            onClick = {
+                                if (player.isPlaying)
+                                {
+                                    player.pause()
+                                }
+                                else
+                                {
+                                player.play()
+                                }
+                            })
                         {
                             playerFunctionality.playingSong =
                                 playerFunctionality.getCurrentlyPlayingFileName(player).toString()
-                            if (!isPlaying) {
+                            if (!player.isPlaying) {
                                 Text(text = "Play")
-                                player.pause()
                             } else {
                                 Text(text = "Pause")
-                                player.play()
                             }
                         }
+                        //NEXT SONG BUTTON
                         Button(
-                            //modifier = Modifier.align(Alignment.CenterHorizontally),
                             onClick = {
                                 player.seekToNextMediaItem()
                                 if (playerFunctionality.playingSongIndex < playerFunctionality.currentFolderAudioFiles.size - 1) {
@@ -105,8 +146,6 @@ class PlayerControls: ViewModel()
                                     playerFunctionality.getCurrentlyPlayingFileName(player).toString()
                             })
                         {
-
-
                             Text(text = "->")
                         }
                     }
@@ -150,9 +189,7 @@ class PlayerControls: ViewModel()
             {
                 ui.AllTracksView(player = player, playerFunctionality = playerFunctionality)
             }
-            //navController.currentDestination
         }
-
     }
 }
 
