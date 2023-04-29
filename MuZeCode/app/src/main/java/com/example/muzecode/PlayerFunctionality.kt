@@ -25,14 +25,22 @@ class PlayerFunctionality(val database: SongQueueDao): ViewModel() {
     }
     var playingFolderAudioFiles by  mutableStateOf(currentFolderAudioFiles)
     var playingSongIndex by  mutableStateOf(0)
-
     var playingSong by mutableStateOf("")
+
     @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     fun  getCurrentlyPlayingFileName(exoPlayer: ExoPlayer): String? {
         val mediaItem = exoPlayer.currentMediaItem ?: return ""
         val uri = mediaItem.playbackProperties?.uri ?: return ""
 
         return uri.path?.let { File(it).name }
+    }
+
+    @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
+    fun  getCurrentlyPlayingFilePath(exoPlayer: ExoPlayer): String? {
+        val mediaItem = exoPlayer.currentMediaItem ?: return ""
+        val uri = mediaItem.playbackProperties?.uri ?: return ""
+
+        return uri.path
     }
     //upon app startup, replace current queue with previously closed queue
     suspend fun startUpQueue(
@@ -50,7 +58,7 @@ class PlayerFunctionality(val database: SongQueueDao): ViewModel() {
             val mediaItems = mutableListOf<MediaItem>()
             val selectedIndex: Song = withContext(Dispatchers.IO)
             {
-                database.getIndex()
+                database.getFirstRow()
             }
 
             var songQueue: List<String> = withContext(Dispatchers.IO)
@@ -65,17 +73,16 @@ class PlayerFunctionality(val database: SongQueueDao): ViewModel() {
             player.setMediaItems(mediaItems)
             player.prepare()
             //SKIP THROUGH QUEUE TO GET TO DESIRED INDEX
-            while(playerFunctionality.playingSongIndex < selectedIndex.songUri.toInt())
+            while(getCurrentlyPlayingFilePath(player).toString() != selectedIndex.songUri.drop(3))
             {
                 player.seekToNextMediaItem()
-                playerFunctionality.playingSongIndex++
+                //playerFunctionality.playingSongIndex++
             }
             playerFunctionality.playingSong = getCurrentlyPlayingFileName(player).toString()
         }
     }
 
     suspend fun setPlayerQueue (
-        //database: SongQueueDao,
         player: ExoPlayer,
         playerFunctionality: PlayerFunctionality,
         selectedIndex: Int
@@ -108,6 +115,7 @@ class PlayerFunctionality(val database: SongQueueDao): ViewModel() {
                 mediaItems.add(MediaItem.fromUri(audioUri))
             }
         }
+
         player.setMediaItems(mediaItems)
         player.prepare()
         //SKIP THROUGH QUEUE TO GET TO DESIRED INDEX
@@ -124,4 +132,5 @@ class PlayerFunctionality(val database: SongQueueDao): ViewModel() {
         val audioUri = Uri.parse(audioCard.toString())
         player.addMediaItem(currentIndex+1, MediaItem.fromUri(audioUri))
     }
+
 }

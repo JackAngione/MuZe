@@ -15,15 +15,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
+
 class Navigation: ViewModel()
 {
     @Composable
     fun navDrawerUI(
+
         database: SongQueueDao,
         playerControls: PlayerControls,
         playerFunctionality: PlayerFunctionality
     )
     {
+
         val coroutineScope = rememberCoroutineScope()
         val navController = rememberNavController()
         val drawerState = rememberDrawerState(DrawerValue.Closed)

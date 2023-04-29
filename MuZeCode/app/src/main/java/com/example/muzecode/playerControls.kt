@@ -17,16 +17,19 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerNotificationManager
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class PlayerControls(): ViewModel()
 {
     private lateinit var player: ExoPlayer
     private lateinit var notificationManager: MediaNotificationManager
+
     @SuppressLint("CoroutineCreationDuringComposition")
     @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
-    fun getPlayer(context: Context, database: SongQueueDao, playerFunctionality: PlayerFunctionality)
+    fun setPlayer(context: Context, database: SongQueueDao, playerFunctionality: PlayerFunctionality)
     {
         //val coroutineScope = rememberCoroutineScope()
         player = ExoPlayer.Builder(context).build()
@@ -47,6 +50,7 @@ class PlayerControls(): ViewModel()
             )
         viewModelScope.launch {
             playerFunctionality.startUpQueue(player = player, playerFunctionality = playerFunctionality)
+
         }
     }
     @UnstableApi private inner class PlayerNotificationListener :
@@ -182,8 +186,31 @@ class PlayerControls(): ViewModel()
                 }
             }
         )
+
         //BACKGROUND CONTENT
         {
+            LaunchedEffect(playerFunctionality.playingSong) {
+                val currentlyPlayingPath = playerFunctionality.getCurrentlyPlayingFilePath(player)
+                val padding = "yyy"
+                val filePathforUpdate = "$padding$currentlyPlayingPath"
+                val queueRowCount: Int = withContext(Dispatchers.IO)
+                {
+                    database.songQueueRowCount()
+                }
+                //database queue is not empty
+                if(queueRowCount != 0)
+                {
+                    val firstRow = withContext(Dispatchers.IO)
+                    {
+                        database.getFirstRow()
+                    }
+                    //firstRow.songUri = playerFunctionality.getCurrentlyPlayingFilePath(playerControls.getPlayer()).toString()
+                    val updatedEntity = withContext(Dispatchers.IO)
+                    {
+                        database.updateSongRow(newName =filePathforUpdate)
+                    }
+                }
+            }
             if(playerFunctionality.currentView)
             {
                 ui.FolderView(player = player,  playerFunctionality = playerFunctionality)

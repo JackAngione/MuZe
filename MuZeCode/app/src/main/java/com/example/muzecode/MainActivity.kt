@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
 
 
         val playerFunctionality = PlayerFunctionality(database = songQueueDao)
-        playerControls.getPlayer(this, database = songQueueDao, playerFunctionality = playerFunctionality)
+        playerControls.setPlayer(this, database = songQueueDao, playerFunctionality = playerFunctionality)
 
         setContent {
             MuZeCodeTheme {
