@@ -16,12 +16,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 class Navigation: ViewModel()
-    {@Composable
+{
+    @Composable
     fun navDrawerUI(
+        database: SongQueueDao,
         playerControls: PlayerControls,
+        playerFunctionality: PlayerFunctionality
     )
     {
-        val playerFunctionality = PlayerFunctionality()
         val coroutineScope = rememberCoroutineScope()
         val navController = rememberNavController()
         val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -103,11 +105,11 @@ class Navigation: ViewModel()
                 }
             },
         ) {
-            MainNavigation(playerControls = playerControls, navController = navController, playerFunctionality = playerFunctionality)
+            MainNavigation(database = database, playerControls = playerControls, navController = navController, playerFunctionality = playerFunctionality)
         }
     }
     @Composable
-    fun MainNavigation(playerControls: PlayerControls, navController: NavController, playerFunctionality: PlayerFunctionality) {
+    fun MainNavigation(database: SongQueueDao, playerControls: PlayerControls, navController: NavController, playerFunctionality: PlayerFunctionality) {
         NavHost(
             navController = navController as NavHostController,
             startDestination = "home"
@@ -115,7 +117,7 @@ class Navigation: ViewModel()
         {
             composable("search") { OutlinedTextField(value = "", onValueChange = {}, placeholder = {Text("Implement Search")}) } //should be similar to folderview but with search function
             composable("home") { Text(text = "HOME") }
-            composable("folderView") { playerControls.ControlsUI() }
+            composable("folderView") { playerControls.ControlsUI(database = database, playerFunctionality = playerFunctionality) }
             composable("queue") { Text(text = "QUEUE MANAGER") } //should be similar to folderview as well
         }
     }

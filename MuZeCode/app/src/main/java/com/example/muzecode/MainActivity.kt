@@ -1,52 +1,54 @@
 package com.example.muzecode
 
-import android.net.Uri
-import android.os.Bundle
-import android.provider.Settings.*
-import androidx.activity.compose.setContent
-import androidx.activity.ComponentActivity
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.Modifier
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
+import android.os.Bundle
+import android.provider.Settings.*
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.*
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.media3.exoplayer.ExoPlayer
+import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.*
+import androidx.room.Room
 import com.example.muzecode.ui.theme.MuZeCodeTheme
 import com.google.accompanist.permissions.*
-import com.google.android.gms.cast.framework.MediaNotificationManager
 
 class MainActivity : ComponentActivity() {
-    //private lateinit var player: ExoPlayer
     private val playerControls: PlayerControls by viewModels()
     private val nav: Navigation by viewModels()
     @RequiresApi(Build.VERSION_CODES.R)
     @OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         val intent = Intent(this, NotificationCancelService::class.java)
         this.startService(intent)
-        //CREATE MEDIA PLAYER
-        playerControls.getPlayer(this)
-        //val player = ExoPlayer.Builder(this).build()
-        //val mediaSession = MediaSession.Builder(this, player).build()
+        //CREATE DATABASE
+        val db = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java, "songQueue"
+        ).build()
+        val songQueueDao = db.songQueueDao()
 
-        //END CREATE MEDIA PLAYER
+
+        val playerFunctionality = PlayerFunctionality(database = songQueueDao)
+        playerControls.getPlayer(this, database = songQueueDao, playerFunctionality = playerFunctionality)
+
         setContent {
             MuZeCodeTheme {
                 // A surface container using the 'background' color from the theme
@@ -55,7 +57,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     //RUN PERMISSIONS CHECK
-                    PermCheck(nav = nav, playerControls = playerControls)
+                    PermCheck(database = songQueueDao, nav = nav, playerControls = playerControls, playerFunctionality = playerFunctionality)
                 }
             }
         }
@@ -69,7 +71,7 @@ class MainActivity : ComponentActivity() {
 @ExperimentalComposeUiApi
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 @Composable
-private fun  PermCheck(nav: Navigation, playerControls: PlayerControls) {
+private fun  PermCheck(database: SongQueueDao, nav: Navigation, playerControls: PlayerControls, playerFunctionality: PlayerFunctionality) {
     var doNotShow by rememberSaveable{ mutableStateOf(false)}
     val storagePermissionState = rememberPermissionState(Manifest.permission.READ_EXTERNAL_STORAGE)
     val context = LocalContext.current
@@ -150,7 +152,6 @@ private fun  PermCheck(nav: Navigation, playerControls: PlayerControls) {
             }
         }
     ) { //will run once permission is granted
-
-        nav.navDrawerUI(playerControls = playerControls)
+        nav.navDrawerUI(database = database, playerControls = playerControls, playerFunctionality = playerFunctionality)
     }
 }

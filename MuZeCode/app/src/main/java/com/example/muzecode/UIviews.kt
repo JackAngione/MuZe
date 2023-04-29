@@ -13,7 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.media3.exoplayer.ExoPlayer
+import kotlinx.coroutines.launch
 import java.io.File
 
 class UIviews: ViewModel(){
@@ -78,11 +80,13 @@ class UIviews: ViewModel(){
                                 playerFunctionality.currentFolder = audioFileCard
                             } else {
                                 playerFunctionality.playingFolderAudioFiles = playerFunctionality.currentFolderAudioFiles
-                                playerFunctionality.setPlayerQueue(
-                                    player = player,
-                                    playerFunctionality = playerFunctionality,
-                                    index
-                                )
+                                viewModelScope.launch {
+                                    playerFunctionality.setPlayerQueue(
+                                        player = player,
+                                        playerFunctionality = playerFunctionality,
+                                        selectedIndex = index
+                                    )
+                                }
                             }
                         }) {
                         Row(modifier = Modifier
@@ -127,10 +131,8 @@ class UIviews: ViewModel(){
             item {
                 Spacer(modifier = Modifier.height(80.dp))
             }
-
         }
     }
-
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun AllTracksView(player: ExoPlayer, playerFunctionality: PlayerFunctionality)
@@ -156,11 +158,12 @@ class UIviews: ViewModel(){
                                 contentColor = MaterialTheme.colorScheme.background
                             ),
                             onClick = {
-                                playerFunctionality.setPlayerQueue(
-                                        player = player,
-                                        playerFunctionality = playerFunctionality,
-                                        index
-                                    )
+                                viewModelScope.launch {playerFunctionality.setPlayerQueue(
+                                    player = player,
+                                    playerFunctionality = playerFunctionality,
+                                    index
+                                )  }
+
                             }) {
                             Row(modifier = Modifier
                                 .padding(16.dp)
@@ -184,13 +187,6 @@ class UIviews: ViewModel(){
             }
         )
     }
-
-    @Composable
-    fun ServerView(player: ExoPlayer, playerFunctionality: PlayerFunctionality)
-    {
-
-    }
-
     @Composable
     fun TrackDropDownMenu(
         player: ExoPlayer,

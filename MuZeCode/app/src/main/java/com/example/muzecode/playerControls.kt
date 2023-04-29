@@ -1,5 +1,6 @@
 package com.example.muzecode
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
@@ -12,20 +13,22 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.C
-import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerNotificationManager
 import kotlinx.coroutines.delay
-class PlayerControls: ViewModel()
+import kotlinx.coroutines.launch
+
+class PlayerControls(): ViewModel()
 {
     private lateinit var player: ExoPlayer
-
     private lateinit var notificationManager: MediaNotificationManager
+    @SuppressLint("CoroutineCreationDuringComposition")
     @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
-    fun getPlayer(context: Context)
+    fun getPlayer(context: Context, database: SongQueueDao, playerFunctionality: PlayerFunctionality)
     {
+        //val coroutineScope = rememberCoroutineScope()
         player = ExoPlayer.Builder(context).build()
         
         val sessionActivityPendingIntent =
@@ -42,6 +45,9 @@ class PlayerControls: ViewModel()
                 player,
                 PlayerNotificationListener()
             )
+        viewModelScope.launch {
+            playerFunctionality.startUpQueue(player = player, playerFunctionality = playerFunctionality)
+        }
     }
     @UnstableApi private inner class PlayerNotificationListener :
         PlayerNotificationManager.NotificationListener {
@@ -55,12 +61,10 @@ class PlayerControls: ViewModel()
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun ControlsUI()
+    fun ControlsUI(playerFunctionality: PlayerFunctionality, database: SongQueueDao)
     {
         val ui = UIviews()
-        val playerFunctionality = remember {
-            PlayerFunctionality()
-        }
+
         BottomSheetScaffold(
             sheetContent = {
                 var isPlaying by remember { mutableStateOf(true) }
@@ -102,7 +106,6 @@ class PlayerControls: ViewModel()
                     {
                         //Previous Song Button
                         Button(
-                            //modifier = Modifier.align(Alignment.CenterHorizontally),
                             onClick = {
                                 player.seekToPreviousMediaItem()
                                 if (playerFunctionality.playingSongIndex > 0) {
