@@ -23,8 +23,8 @@ private val DarkColorScheme = darkColorScheme(
     tertiary = Magenta40,
     background = MidGrey40,
     onBackground = OffWhite40,
-    surface = Color.Black,
-    onSurface = Magenta40
+    surface = MidGrey40,
+    onSurface = OffWhite40
 )
 
 private val LightColorScheme = lightColorScheme( //light theme may be pretty dark right now to try out this palette
@@ -34,8 +34,8 @@ private val LightColorScheme = lightColorScheme( //light theme may be pretty dar
     tertiary = Magenta40,
     background = OffWhite40,
     onBackground = Magenta40,
-    surface = BlueGrey40,
-    onSurface = Orange40
+    surface = OffWhite40,
+    onSurface = MidGrey40
 )
 
 @Composable

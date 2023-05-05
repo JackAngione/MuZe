@@ -62,7 +62,6 @@ class UIviews: ViewModel(){
             Text(text = "Pualo Vallecillo Rangel", textAlign = TextAlign.Center)
             Text(text = "Ayoob Mohammed Redi", textAlign = TextAlign.Center)
         }
-
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -86,10 +85,7 @@ class UIviews: ViewModel(){
                 {
                     albumArtList.value = emptyList()
                 }
-
                 }
-
-
         }
         //START FOLDER LIST UI
         LazyColumn(
@@ -103,11 +99,11 @@ class UIviews: ViewModel(){
                         .fillMaxWidth()
                         .border(
                             width = 2.dp,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.primary
                         ),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                        contentColor = MaterialTheme.colorScheme.background
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     onClick = {
                         if (playerFunctionality.currentFolder != File("/storage/emulated/0/Music")) {
@@ -140,11 +136,11 @@ class UIviews: ViewModel(){
                             .fillMaxWidth()
                             .border(
                                 width = 2.dp,
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.primary
                             ),
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.secondary,
-                            contentColor = MaterialTheme.colorScheme.background
+                            containerColor = MaterialTheme.colorScheme.background,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         onClick = {
 
@@ -183,9 +179,9 @@ class UIviews: ViewModel(){
                             }
                             Text(
                                 text = audioFileCard.name,
-                                modifier = Modifier.widthIn(max = 300.dp),
+                                modifier = Modifier.widthIn(max = 300.dp).padding(10.dp),
                                 fontSize = 18.sp,
-
+                                color = MaterialTheme.colorScheme.onSurface
                                 )
                             Spacer(modifier = Modifier.weight(1f))
                             TrackDropDownMenu(playerFunctionality = playerFunctionality, player = player, audioCard = audioFileCard)
@@ -200,11 +196,11 @@ class UIviews: ViewModel(){
                             .fillMaxWidth()
                             .border(
                                 width = 2.dp,
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.primary
                             ),
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.secondary,
-                            contentColor = MaterialTheme.colorScheme.background
+                            containerColor = MaterialTheme.colorScheme.background,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         onClick = {
                             playerFunctionality.currentFolder = audioFileCard
@@ -214,7 +210,8 @@ class UIviews: ViewModel(){
                             fontSize = 18.sp,
                             modifier = Modifier
                                 .padding(16.dp)
-                                .align(Alignment.CenterHorizontally)
+                                .align(Alignment.CenterHorizontally),
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -264,11 +261,11 @@ class UIviews: ViewModel(){
                                 .fillMaxWidth()
                                 .border(
                                     width = 2.dp,
-                                    color = Color.White
+                                    color = MaterialTheme.colorScheme.primary
                                 ),
                             colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.secondary,
-                                contentColor = MaterialTheme.colorScheme.background
+                                containerColor = MaterialTheme.colorScheme.background,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
                             ),
                             onClick = {
                                 viewModelScope.launch {playerFunctionality.setPlayerQueue(
@@ -299,8 +296,9 @@ class UIviews: ViewModel(){
                                 }
                                 Text(
                                     text = audioFileCard.name,
-                                    modifier = Modifier.widthIn(max = 320.dp),
+                                    modifier = Modifier.widthIn(max = 300.dp).padding(10.dp),
                                     fontSize = 18.sp,
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Spacer(modifier = Modifier.weight(1f))
                                 TrackDropDownMenu(playerFunctionality = playerFunctionality, player = player, audioCard = audioFileCard)
@@ -328,7 +326,7 @@ class UIviews: ViewModel(){
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
-                modifier = Modifier.wrapContentSize()
+                modifier = Modifier.wrapContentSize(),
             ) {
                 Button(
                     modifier = Modifier.fillMaxSize(),

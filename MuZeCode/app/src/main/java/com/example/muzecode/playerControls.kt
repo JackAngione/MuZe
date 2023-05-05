@@ -5,6 +5,9 @@ import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -13,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.C
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
@@ -31,7 +35,6 @@ class PlayerControls(): ViewModel()
     @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     fun setPlayer(context: Context, database: SongQueueDao, playerFunctionality: PlayerFunctionality)
     {
-        //val coroutineScope = rememberCoroutineScope()
         player = ExoPlayer.Builder(context).build()
         
         val sessionActivityPendingIntent =
@@ -77,18 +80,66 @@ class PlayerControls(): ViewModel()
                         .padding(16.dp),
                     verticalArrangement = Arrangement.Center
                 ) {
-                    //TOGGLE BETWEEN ALL TRACKS AND FOLDER VIEW
-                    Text(text = "TrackView / FolderView")
-                    Switch(
-                        checked = playerFunctionality.trackFolderToggle,
-                        onCheckedChange = {
-                            playerFunctionality.trackFolderToggle = it
+                    Row() {
+                        //TOGGLE BETWEEN ALL TRACKS AND FOLDER VIEW
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(text = "TrackView / FolderView")
+                            Switch(
+                                checked = playerFunctionality.trackFolderToggle,
+                                onCheckedChange = {
+                                    playerFunctionality.trackFolderToggle = it
 
-                        },
-                        colors = SwitchDefaults.colors(
-                            checkedThumbColor = MaterialTheme.colorScheme.tertiary
-                        )
-                    )
+                                },
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = MaterialTheme.colorScheme.tertiary
+                                )
+                            )
+                        }
+                        Spacer(modifier = Modifier.weight(1f))
+                        //REPEAT BUTTON
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(text = "Repeat")
+                            Button(shape = RoundedCornerShape(10.dp), onClick = {
+                                when (player.repeatMode) {
+                                    0 -> {
+                                        player.repeatMode = Player.REPEAT_MODE_ONE
+                                    }
+                                    1 -> {
+                                        player.repeatMode = Player.REPEAT_MODE_ALL
+                                    }
+                                    2 -> {
+                                        player.repeatMode = Player.REPEAT_MODE_OFF
+                                    }
+                                }
+
+                            }) {
+                                when (player.repeatMode) {
+                                    0 -> {
+                                        Text(text = "off", color = MaterialTheme.colorScheme.tertiary)
+                                    }
+                                    1 -> {
+                                        Text(text = "single", color = MaterialTheme.colorScheme.tertiary)
+                                    }
+                                    2 -> {
+                                        Text(text = "all", color = MaterialTheme.colorScheme.tertiary)
+                                    }
+                                }
+
+
+                            }
+                        }
+                        Spacer(modifier = Modifier.weight(1f))
+                        //SHUFFLE
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(text = "Shuffle")
+                            Switch(
+                                checked = player.shuffleModeEnabled,
+                                onCheckedChange = {
+                                    player.shuffleModeEnabled = !player.shuffleModeEnabled
+                                })
+                        }
+                    }
+
                     Text(
                         text = playerFunctionality.playingSong,
                         modifier = Modifier
@@ -101,7 +152,7 @@ class PlayerControls(): ViewModel()
                     )
                     {
                         //Previous Song Button
-                        Button(
+                        IconButton(
                             onClick = {
                                 player.seekToPreviousMediaItem()
                                 if (playerFunctionality.playingSongIndex > 0) {
@@ -111,10 +162,10 @@ class PlayerControls(): ViewModel()
                                     playerFunctionality.getCurrentlyPlayingFileName(player).toString()
                             })
                         {
-                            Text(text = "<-")
+                            Icon(Icons.Filled.ArrowBack, contentDescription = "Play")
                         }
                         //PLAY/PAUSE BUTTON
-                        Button(
+                        IconButton(
                             onClick = {
                                 if (player.isPlaying)
                                 {
@@ -129,13 +180,14 @@ class PlayerControls(): ViewModel()
                             playerFunctionality.playingSong =
                                 playerFunctionality.getCurrentlyPlayingFileName(player).toString()
                             if (!player.isPlaying) {
-                                Text(text = "Play")
+                                Icon(Icons.Filled.PlayArrow, contentDescription = "Play")
                             } else {
-                                Text(text = "Pause")
+                                Icon(Icons.Filled.Pause, contentDescription = "Play")
                             }
+
                         }
                         //NEXT SONG BUTTON
-                        Button(
+                        IconButton(
                             onClick = {
                                 player.seekToNextMediaItem()
                                 if (playerFunctionality.playingSongIndex < playerFunctionality.currentFolderAudioFiles.size - 1) {
@@ -145,7 +197,7 @@ class PlayerControls(): ViewModel()
                                     playerFunctionality.getCurrentlyPlayingFileName(player).toString()
                             })
                         {
-                            Text(text = "->")
+                            Icon(Icons.Filled.ArrowForward, contentDescription = "Play")
                         }
                     }
                     //AUDIO SEEK BAR
