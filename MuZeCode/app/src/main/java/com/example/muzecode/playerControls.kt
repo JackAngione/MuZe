@@ -71,14 +71,6 @@ class PlayerControls(): ViewModel()
 
         BottomSheetScaffold(
             sheetContent = {
-                var isPlaying by remember { mutableStateOf(true) }
-
-                LaunchedEffect(player) {
-                    if(!player.isPlaying)
-                    {
-                        isPlaying = false
-                    }
-                }
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -88,9 +80,9 @@ class PlayerControls(): ViewModel()
                     //TOGGLE BETWEEN ALL TRACKS AND FOLDER VIEW
                     Text(text = "TrackView / FolderView")
                     Switch(
-                        checked = playerFunctionality.currentView,
+                        checked = playerFunctionality.trackFolderToggle,
                         onCheckedChange = {
-                            playerFunctionality.currentView = it
+                            playerFunctionality.trackFolderToggle = it
 
                         },
                         colors = SwitchDefaults.colors(
@@ -190,28 +182,32 @@ class PlayerControls(): ViewModel()
         //BACKGROUND CONTENT
         {
             LaunchedEffect(playerFunctionality.playingSong) {
-                val currentlyPlayingPath = playerFunctionality.getCurrentlyPlayingFilePath(player)
-                val padding = "yyy"
-                val filePathforUpdate = "$padding$currentlyPlayingPath"
-                val queueRowCount: Int = withContext(Dispatchers.IO)
+                val currentlyPlayingPath: String? = playerFunctionality.getCurrentlyPlayingFilePath(player)
+                if(currentlyPlayingPath?.startsWith("/storage/emulated/0/") == true)
                 {
-                    database.songQueueRowCount()
-                }
-                //database queue is not empty
-                if(queueRowCount != 0)
-                {
-                    val firstRow = withContext(Dispatchers.IO)
+
+                    val padding = "yyy"
+                    val filePathforUpdate = "$padding$currentlyPlayingPath"
+                    val queueRowCount: Int = withContext(Dispatchers.IO)
                     {
-                        database.getFirstRow()
+                        database.songQueueRowCount()
                     }
-                    //firstRow.songUri = playerFunctionality.getCurrentlyPlayingFilePath(playerControls.getPlayer()).toString()
-                    val updatedEntity = withContext(Dispatchers.IO)
+                    //database queue is not empty
+                    if(queueRowCount != 0)
                     {
-                        database.updateSongRow(newName =filePathforUpdate)
+                        val firstRow = withContext(Dispatchers.IO)
+                        {
+                            database.getFirstRow()
+                        }
+                        //firstRow.songUri = playerFunctionality.getCurrentlyPlayingFilePath(playerControls.getPlayer()).toString()
+                        val updatedEntity = withContext(Dispatchers.IO)
+                        {
+                            database.updateSongRow(newName =filePathforUpdate)
+                        }
                     }
                 }
             }
-            if(playerFunctionality.currentView)
+            if(playerFunctionality.trackFolderToggle)
             {
                 ui.FolderView(player = player,  playerFunctionality = playerFunctionality)
             }
@@ -219,6 +215,7 @@ class PlayerControls(): ViewModel()
             {
                 ui.AllTracksView(player = player, playerFunctionality = playerFunctionality)
             }
+
         }
     }
 }

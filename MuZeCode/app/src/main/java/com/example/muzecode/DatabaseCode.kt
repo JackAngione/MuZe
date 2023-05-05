@@ -8,7 +8,6 @@ interface SongQueueDao {
     @Query("SELECT COUNT(*) FROM songQueue")
     fun songQueueRowCount(): Int
 
-
     //GET THE FIRST ROW AKA QUEUE, WHICH IS THE NAME OF A FILE !!
     @Query("SELECT * FROM songQueue LIMIT 1")
     fun getFirstRow(): Song
@@ -33,7 +32,6 @@ interface SongQueueDao {
 data class Song(
     @ColumnInfo(name = "songURI") var songUri: String,
 )
-
 
 @Database(entities = [Song::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {

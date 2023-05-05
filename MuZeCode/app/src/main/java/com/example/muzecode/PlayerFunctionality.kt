@@ -12,8 +12,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 class PlayerFunctionality(val database: SongQueueDao): ViewModel() {
+    //0 is track view, 1 is folder view, 2 is server view
+    var trackFolderToggle by mutableStateOf(false)
 
-    var currentView by mutableStateOf(false)
     val musicFolder = File("/storage/emulated/0/Music")
     var currentFolder by mutableStateOf(musicFolder)
     val currentFolderFiles by derivedStateOf { currentFolder.listFiles() }
@@ -48,6 +49,7 @@ class PlayerFunctionality(val database: SongQueueDao): ViewModel() {
         playerFunctionality: PlayerFunctionality,
     )
     {
+        player.clearMediaItems()
         val queueRowCount: Int = withContext(Dispatchers.IO)
         {
             database.songQueueRowCount()
@@ -88,34 +90,34 @@ class PlayerFunctionality(val database: SongQueueDao): ViewModel() {
         selectedIndex: Int
     )
     {
+        val mediaItems = mutableListOf<MediaItem>()
+        player.clearMediaItems()
         withContext(Dispatchers.IO)
         {
             database.deleteAllQueue()
-        }
-        player.clearMediaItems()
-        playerFunctionality.playingSongIndex = 0
-        val mediaItems = mutableListOf<MediaItem>()
-        withContext(Dispatchers.IO)
-        {
-            database.insertSongUri(Song(songUri = selectedIndex.toString()))
-        }
-        for(i in playerFunctionality.playingFolderAudioFiles.indices)
-        {
-            if(playerFunctionality.playingFolderAudioFiles[i].isDirectory || playerFunctionality.playingFolderAudioFiles[i].extension !in arrayOf("mp3", "wav", "ogg", "aac") )
-            {
-                continue
-            }
-            else
-            {
-                val audioUri = Uri.parse(playerFunctionality.playingFolderAudioFiles[i].toString())
-                withContext(Dispatchers.IO)
-                {
-                    database.insertSongUri(Song(songUri = audioUri.toString()))
-                }
-                mediaItems.add(MediaItem.fromUri(audioUri))
-            }
-        }
+            playerFunctionality.playingSongIndex = 0
 
+            database.insertSongUri(Song(songUri = selectedIndex.toString()))
+
+            for (i in playerFunctionality.playingFolderAudioFiles.indices) {
+                if (playerFunctionality.playingFolderAudioFiles[i].isDirectory || playerFunctionality.playingFolderAudioFiles[i].extension !in arrayOf(
+                        "mp3",
+                        "wav",
+                        "ogg",
+                        "aac"
+                    )
+                ) {
+                    continue
+                } else {
+                    val audioUri =
+                        Uri.parse(playerFunctionality.playingFolderAudioFiles[i].toString())
+
+                    database.insertSongUri(Song(songUri = audioUri.toString()))
+
+                    mediaItems.add(MediaItem.fromUri(audioUri))
+                }
+            }
+        }
         player.setMediaItems(mediaItems)
         player.prepare()
         //SKIP THROUGH QUEUE TO GET TO DESIRED INDEX

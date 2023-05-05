@@ -54,6 +54,7 @@ class Navigation: ViewModel()
                         }) {
                             Text(text = "Search")
                         }
+                        //SONGS PAGE
                         Button(onClick = {
                             coroutineScope.launch { drawerState.close() }
                             navController.navigate("folderView") {
@@ -69,6 +70,7 @@ class Navigation: ViewModel()
                         }) {
                             Text(text = "Songs")
                         }
+                        //HOME PAGE
                         Button(
                             onClick =
                             {
@@ -113,13 +115,14 @@ class Navigation: ViewModel()
     }
     @Composable
     fun MainNavigation(database: SongQueueDao, playerControls: PlayerControls, navController: NavController, playerFunctionality: PlayerFunctionality) {
+        val ui = UIviews()
         NavHost(
             navController = navController as NavHostController,
             startDestination = "home"
         )
         {
             composable("search") { OutlinedTextField(value = "", onValueChange = {}, placeholder = {Text("Implement Search")}) } //should be similar to folderview but with search function
-            composable("home") { Text(text = "HOME") }
+            composable("home") { ui.HomeScreen() }
             composable("folderView") { playerControls.ControlsUI(database = database, playerFunctionality = playerFunctionality) }
             composable("queue") { Text(text = "QUEUE MANAGER") } //should be similar to folderview as well
         }
