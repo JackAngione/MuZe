@@ -1,29 +1,13 @@
-# README #
+# MuZe #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+MuZe is a music player app that allows users to functionally play local audio files on their device
 
-### What is this repository for? ###
-
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
-
-### How do I get set up? ###
-
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+### Completed Requirements ###
+* Custom App Icon
+* Custom Theme
+* LazyColumn / LazyRow
+* Player controls as a notification, allowing users to play,pause,and skip songs from outside of the app
+* Navigation Drawer
+* Navigation across screens
+* SQLite database via Room that stores the currently playing queue so that when the app is reopened, it loads the songs you left off
+* Pulls images from the internet as mock album covers
