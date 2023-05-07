@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
@@ -95,6 +96,7 @@ class UIviews: ViewModel(){
         ) {
             item {
                 Card(
+                    shape = RoundedCornerShape(1.dp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .border(
@@ -104,6 +106,7 @@ class UIviews: ViewModel(){
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary
+
                     ),
                     onClick = {
                         if (playerFunctionality.currentFolder != File("/storage/emulated/0/Music")) {
@@ -166,7 +169,7 @@ class UIviews: ViewModel(){
                                 //.border(2.dp, Color.Red)
                             )
                             {
-                                if(albumArtList.value.size >= playerFunctionality.currentFolderAudioFiles.size)
+                                if(albumArtList.value.size >= playerFunctionality.currentFolderAudioFiles.size && albumArtList.value.isNotEmpty())
                                 {
                                     SubcomposeAsyncImage(
                                         model = albumArtList.value.elementAt(index).download_url,
@@ -179,7 +182,9 @@ class UIviews: ViewModel(){
                             }
                             Text(
                                 text = audioFileCard.name,
-                                modifier = Modifier.widthIn(max = 300.dp).padding(10.dp),
+                                modifier = Modifier
+                                    .width(300.dp)
+                                    .padding(10.dp),
                                 fontSize = 18.sp,
                                 color = MaterialTheme.colorScheme.onSurface
                                 )
@@ -283,7 +288,7 @@ class UIviews: ViewModel(){
                                     //.border(2.dp, Color.Red))
                                 )
                                 {
-                                    if(albumArtList.value.size >= playerFunctionality.currentFolderAudioFiles.size-1)
+                                    if(albumArtList.value.size >= playerFunctionality.currentFolderAudioFiles.size-1 && albumArtList.value.isNotEmpty())
                                     {
                                         SubcomposeAsyncImage(
                                             model = albumArtList.value.elementAt(index).download_url,
@@ -296,7 +301,9 @@ class UIviews: ViewModel(){
                                 }
                                 Text(
                                     text = audioFileCard.name,
-                                    modifier = Modifier.widthIn(max = 300.dp).padding(10.dp),
+                                    modifier = Modifier
+                                        .width(300.dp)
+                                        .padding(10.dp),
                                     fontSize = 18.sp,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
@@ -321,18 +328,28 @@ class UIviews: ViewModel(){
         var expanded by remember { mutableStateOf(false) }
         Box {
             IconButton(onClick = { expanded = !expanded }) {
-                Icon(Icons.Default.MoreVert, contentDescription = "Open dropdown menu")
+                Icon(Icons.Default.MoreVert, tint = MaterialTheme.colorScheme.tertiary, contentDescription = "Open dropdown menu")
             }
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
-                modifier = Modifier.wrapContentSize(),
+                modifier = Modifier.wrapContentSize()
+
             ) {
                 Button(
+                    shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxSize(),
                     onClick = {
                     playerFunctionality.setNextInQueue(player = player, audioCard = audioCard)
                 }) {
+                    Text(text = "Add to next in queue")
+                }
+                Button(
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier.fillMaxSize(),
+                    onClick = {
+                        playerFunctionality.setNextInQueue(player = player, audioCard = audioCard)
+                    }) {
                     Text(text = "Add to next in queue")
                 }
             }

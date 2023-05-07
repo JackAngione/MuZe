@@ -91,7 +91,7 @@ class PlayerControls(): ViewModel()
 
                                 },
                                 colors = SwitchDefaults.colors(
-                                    checkedThumbColor = MaterialTheme.colorScheme.tertiary
+                                    //checkedThumbColor = MaterialTheme.colorScheme.tertiary
                                 )
                             )
                         }
@@ -111,21 +111,18 @@ class PlayerControls(): ViewModel()
                                         player.repeatMode = Player.REPEAT_MODE_OFF
                                     }
                                 }
-
                             }) {
                                 when (player.repeatMode) {
                                     0 -> {
-                                        Text(text = "off", color = MaterialTheme.colorScheme.tertiary)
+                                        Text(text = "off", color = MaterialTheme.colorScheme.onPrimary)
                                     }
                                     1 -> {
-                                        Text(text = "single", color = MaterialTheme.colorScheme.tertiary)
+                                        Text(text = "single", color = MaterialTheme.colorScheme.onPrimary)
                                     }
                                     2 -> {
-                                        Text(text = "all", color = MaterialTheme.colorScheme.tertiary)
+                                        Text(text = "all", color = MaterialTheme.colorScheme.onPrimary)
                                     }
                                 }
-
-
                             }
                         }
                         Spacer(modifier = Modifier.weight(1f))
@@ -213,7 +210,7 @@ class PlayerControls(): ViewModel()
                     Slider(
                         modifier = Modifier.fillMaxWidth(),
                         colors = SliderDefaults.colors(
-                            thumbColor = MaterialTheme.colorScheme.tertiary
+                            thumbColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         value = sliderPosition,
 
