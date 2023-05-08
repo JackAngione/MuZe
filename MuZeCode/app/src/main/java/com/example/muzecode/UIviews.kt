@@ -1,5 +1,7 @@
 package com.example.muzecode
 
+import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,31 +15,29 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import coil.compose.SubcomposeAsyncImage
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.File
-import java.net.URI
 import java.net.UnknownHostException
-import kotlin.jvm.internal.Intrinsics.Kotlin
 import kotlin.random.Random
 
-class UIviews: ViewModel(){
+
+class UIviews: ViewModel() {
     data class albumArt(
         val id: String,
         val author: String,
@@ -46,9 +46,9 @@ class UIviews: ViewModel(){
         val url: String,
         val download_url: String,
     )
+
     @Composable
-    fun HomeScreen()
-    {
+    fun HomeScreen() {
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -71,22 +71,21 @@ class UIviews: ViewModel(){
     fun FolderView(
         player: ExoPlayer,
         playerFunctionality: PlayerFunctionality
-    )
-    {
+    ) {
         val coroutineScope = rememberCoroutineScope()
+
         //ALBUM ART
         val albumArtList = remember { mutableStateOf<List<albumArt>>(emptyList()) }
         LaunchedEffect(playerFunctionality.currentFolder)
         {
             coroutineScope.launch {
                 try {
-                    albumArtList.value = httpGet(trackCount = playerFunctionality.currentFolderAudioFiles.size)
-                }
-                catch (e: UnknownHostException)
-                {
+                    albumArtList.value =
+                        httpGet(trackCount = playerFunctionality.currentFolderAudioFiles.size)
+                } catch (e: UnknownHostException) {
                     albumArtList.value = emptyList()
                 }
-                }
+            }
         }
         //START FOLDER LIST UI
         LazyColumn(
@@ -150,7 +149,8 @@ class UIviews: ViewModel(){
                             if (audioFileCard.isDirectory) {
                                 playerFunctionality.currentFolder = audioFileCard
                             } else {
-                                playerFunctionality.playingFolderAudioFiles = playerFunctionality.currentFolderAudioFiles
+                                playerFunctionality.playingFolderAudioFiles =
+                                    playerFunctionality.currentFolderAudioFiles
                                 viewModelScope.launch {
                                     playerFunctionality.setPlayerQueue(
                                         player = player,
@@ -160,17 +160,19 @@ class UIviews: ViewModel(){
                                 }
                             }
                         }) {
-                        Row(modifier = Modifier
-                            .padding(16.dp)
-                            .align(Alignment.CenterHorizontally))
+                        Row(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .align(Alignment.CenterHorizontally)
+                        )
                         {
-                            Box(modifier = Modifier
-                                .size(60.dp)
+                            Box(
+                                modifier = Modifier
+                                    .size(60.dp)
                                 //.border(2.dp, Color.Red)
                             )
                             {
-                                if(albumArtList.value.size >= playerFunctionality.currentFolderAudioFiles.size && albumArtList.value.isNotEmpty())
-                                {
+                                if (albumArtList.value.size >= playerFunctionality.currentFolderAudioFiles.size && albumArtList.value.isNotEmpty()) {
                                     SubcomposeAsyncImage(
                                         model = albumArtList.value.elementAt(index).download_url,
                                         loading = {
@@ -187,9 +189,13 @@ class UIviews: ViewModel(){
                                     .padding(10.dp),
                                 fontSize = 18.sp,
                                 color = MaterialTheme.colorScheme.onSurface
-                                )
+                            )
                             Spacer(modifier = Modifier.weight(1f))
-                            TrackDropDownMenu(playerFunctionality = playerFunctionality, player = player, audioCard = audioFileCard)
+                            TrackDropDownMenu(
+                                playerFunctionality = playerFunctionality,
+                                player = player,
+                                audioCard = audioFileCard
+                            )
                         }
                     }
                 }
@@ -226,10 +232,10 @@ class UIviews: ViewModel(){
             }
         }
     }
+
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun AllTracksView(player: ExoPlayer, playerFunctionality: PlayerFunctionality)
-    {
+    fun AllTracksView(player: ExoPlayer, playerFunctionality: PlayerFunctionality) {
         //ALBUM ART
         val coroutineScope = rememberCoroutineScope()
         val albumArtList = remember { mutableStateOf<List<albumArt>>(emptyList()) }
@@ -237,7 +243,8 @@ class UIviews: ViewModel(){
 
             coroutineScope.launch {
                 try {
-                    albumArtList.value = httpGet(trackCount = playerFunctionality.playingFolderAudioFiles.size)
+                    albumArtList.value =
+                        httpGet(trackCount = playerFunctionality.playingFolderAudioFiles.size)
                 } catch (e: UnknownHostException) {
                     albumArtList.value = emptyList()
                 }
@@ -246,12 +253,12 @@ class UIviews: ViewModel(){
         //
         playerFunctionality.currentFolder = playerFunctionality.musicFolder
         LazyColumn(
-            modifier = Modifier.background(color = MaterialTheme.colorScheme.background)
-            ,
+            modifier = Modifier.background(color = MaterialTheme.colorScheme.background),
             content =
             {
 
-                playerFunctionality.playingFolderAudioFiles = getAudioFiles(playerFunctionality.currentFolder)
+                playerFunctionality.playingFolderAudioFiles =
+                    getAudioFiles(playerFunctionality.currentFolder)
                 itemsIndexed(playerFunctionality.playingFolderAudioFiles) { index, audioFileCard ->
                     if (audioFileCard.extension in arrayOf(
                             "mp3",
@@ -273,23 +280,27 @@ class UIviews: ViewModel(){
                                 contentColor = MaterialTheme.colorScheme.onPrimary
                             ),
                             onClick = {
-                                viewModelScope.launch {playerFunctionality.setPlayerQueue(
-                                    player = player,
-                                    playerFunctionality = playerFunctionality,
-                                    index
-                                )  }
+                                viewModelScope.launch {
+                                    playerFunctionality.setPlayerQueue(
+                                        player = player,
+                                        playerFunctionality = playerFunctionality,
+                                        index
+                                    )
+                                }
                             }) {
-                            Row(modifier = Modifier
-                                .padding(16.dp)
-                                .align(Alignment.CenterHorizontally))
+                            Row(
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .align(Alignment.CenterHorizontally)
+                            )
                             {
-                                Box(modifier = Modifier
-                                    .size(60.dp)
+                                Box(
+                                    modifier = Modifier
+                                        .size(60.dp)
                                     //.border(2.dp, Color.Red))
                                 )
                                 {
-                                    if(albumArtList.value.size >= playerFunctionality.currentFolderAudioFiles.size-1 && albumArtList.value.isNotEmpty())
-                                    {
+                                    if (albumArtList.value.size >= playerFunctionality.currentFolderAudioFiles.size - 1 && albumArtList.value.isNotEmpty()) {
                                         SubcomposeAsyncImage(
                                             model = albumArtList.value.elementAt(index).download_url,
                                             loading = {
@@ -308,7 +319,11 @@ class UIviews: ViewModel(){
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Spacer(modifier = Modifier.weight(1f))
-                                TrackDropDownMenu(playerFunctionality = playerFunctionality, player = player, audioCard = audioFileCard)
+                                TrackDropDownMenu(
+                                    playerFunctionality = playerFunctionality,
+                                    player = player,
+                                    audioCard = audioFileCard
+                                )
                             }
                         }
                     }
@@ -319,16 +334,22 @@ class UIviews: ViewModel(){
             }
         )
     }
+
     @Composable
     fun TrackDropDownMenu(
         player: ExoPlayer,
         audioCard: File,
         playerFunctionality: PlayerFunctionality
     ) {
+        val context = LocalContext.current
         var expanded by remember { mutableStateOf(false) }
         Box {
             IconButton(onClick = { expanded = !expanded }) {
-                Icon(Icons.Default.MoreVert, tint = MaterialTheme.colorScheme.tertiary, contentDescription = "Open dropdown menu")
+                Icon(
+                    Icons.Default.MoreVert,
+                    tint = MaterialTheme.colorScheme.tertiary,
+                    contentDescription = "Open dropdown menu"
+                )
             }
             DropdownMenu(
                 expanded = expanded,
@@ -336,14 +357,7 @@ class UIviews: ViewModel(){
                 modifier = Modifier.wrapContentSize()
 
             ) {
-                Button(
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier.fillMaxSize(),
-                    onClick = {
-                    playerFunctionality.setNextInQueue(player = player, audioCard = audioCard)
-                }) {
-                    Text(text = "Add to next in queue")
-                }
+                //ADD TO NEXT IN QUEUE
                 Button(
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxSize(),
@@ -352,9 +366,27 @@ class UIviews: ViewModel(){
                     }) {
                     Text(text = "Add to next in queue")
                 }
+                //INTENT FEATURE
+                Button(
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier.fillMaxSize(),
+                    onClick = {
+                        webSearchIntent(context, audioCard.name.dropLast(4))
+                    }) {
+                    Text(text = "Open Internet")
+                }
             }
         }
     }
+    fun webSearchIntent(context: Context, songName:String)
+    {
+        val encodedSearchText = Uri.encode(songName)
+        val openUrlIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/search?q=$encodedSearchText"))
+        if (openUrlIntent.resolveActivity(context.packageManager) != null) {
+            context.startActivity(openUrlIntent)
+        }
+    }
+
     private fun getAudioFiles(folder: File): List<File> {
         val audioFiles = mutableListOf<File>()
         folder.listFiles()?.forEach { file ->
