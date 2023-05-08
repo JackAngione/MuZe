@@ -7,6 +7,7 @@ MuZe is a music player app that allows users to functionally play local audio fi
 * Custom Theme
 * LazyColumn / LazyRow
 * Player controls as a notification, allowing users to play,pause,and skip songs from outside of the app
+* Intent - open a google search of the filename of a selected song to quickly retrieve general information about it/lyrics
 * Navigation Drawer
 * Navigation across screens
 * SQLite database via Room that stores the currently playing queue so that when the app is reopened, it loads the songs you left off
