@@ -58,7 +58,6 @@ class Navigation: ViewModel()
                                     launchSingleTop = true
                                     restoreState = true
                                 }
-
                             }) {
                             Text(text = "Home")
                         }
@@ -113,12 +112,10 @@ class Navigation: ViewModel()
                                 launchSingleTop = true
                                 restoreState = true
                             }
-
                         }) {
                             Text(text = "Queue")
                         }
                     }
-
                 }
             },
         ) {

@@ -105,7 +105,6 @@ class UIviews: ViewModel() {
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary
-
                     ),
                     onClick = {
                         if (playerFunctionality.currentFolder != File("/storage/emulated/0/Music")) {

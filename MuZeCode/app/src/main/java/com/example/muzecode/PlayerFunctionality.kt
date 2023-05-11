@@ -12,7 +12,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 class PlayerFunctionality(val database: SongQueueDao): ViewModel() {
-    //0 is track view, 1 is folder view, 2 is server view
     var trackFolderToggle by mutableStateOf(false)
 
     val musicFolder = File("/storage/emulated/0/Music")
@@ -32,7 +31,6 @@ class PlayerFunctionality(val database: SongQueueDao): ViewModel() {
     fun  getCurrentlyPlayingFileName(exoPlayer: ExoPlayer): String? {
         val mediaItem = exoPlayer.currentMediaItem ?: return ""
         val uri = mediaItem.playbackProperties?.uri ?: return ""
-
         return uri.path?.let { File(it).name }
     }
 
@@ -78,7 +76,6 @@ class PlayerFunctionality(val database: SongQueueDao): ViewModel() {
             while(getCurrentlyPlayingFilePath(player).toString() != selectedIndex.songUri.drop(3))
             {
                 player.seekToNextMediaItem()
-                //playerFunctionality.playingSongIndex++
             }
             playerFunctionality.playingSong = getCurrentlyPlayingFileName(player).toString()
         }
@@ -100,12 +97,9 @@ class PlayerFunctionality(val database: SongQueueDao): ViewModel() {
             database.insertSongUri(Song(songUri = selectedIndex.toString()))
 
             for (i in playerFunctionality.playingFolderAudioFiles.indices) {
-                if (playerFunctionality.playingFolderAudioFiles[i].isDirectory || playerFunctionality.playingFolderAudioFiles[i].extension !in arrayOf(
-                        "mp3",
-                        "wav",
-                        "ogg",
-                        "aac"
-                    )
+                if (playerFunctionality.playingFolderAudioFiles[i].isDirectory
+                    || playerFunctionality.playingFolderAudioFiles[i].extension !in arrayOf(
+                        "mp3", "wav", "ogg", "aac")
                 ) {
                     continue
                 } else {
@@ -113,7 +107,6 @@ class PlayerFunctionality(val database: SongQueueDao): ViewModel() {
                         Uri.parse(playerFunctionality.playingFolderAudioFiles[i].toString())
 
                     database.insertSongUri(Song(songUri = audioUri.toString()))
-
                     mediaItems.add(MediaItem.fromUri(audioUri))
                 }
             }

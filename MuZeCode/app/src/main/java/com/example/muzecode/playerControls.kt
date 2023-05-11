@@ -53,7 +53,6 @@ class PlayerControls(): ViewModel()
             )
         viewModelScope.launch {
             playerFunctionality.startUpQueue(player = player, playerFunctionality = playerFunctionality)
-
         }
     }
     @UnstableApi private inner class PlayerNotificationListener :
@@ -88,7 +87,6 @@ class PlayerControls(): ViewModel()
                                 checked = playerFunctionality.trackFolderToggle,
                                 onCheckedChange = {
                                     playerFunctionality.trackFolderToggle = it
-
                                 },
                                 colors = SwitchDefaults.colors(
                                     //checkedThumbColor = MaterialTheme.colorScheme.tertiary
@@ -181,7 +179,6 @@ class PlayerControls(): ViewModel()
                             } else {
                                 Icon(Icons.Filled.Pause, contentDescription = "Play")
                             }
-
                         }
                         //NEXT SONG BUTTON
                         IconButton(
@@ -234,7 +231,6 @@ class PlayerControls(): ViewModel()
                 val currentlyPlayingPath: String? = playerFunctionality.getCurrentlyPlayingFilePath(player)
                 if(currentlyPlayingPath?.startsWith("/storage/emulated/0/") == true)
                 {
-
                     val padding = "yyy"
                     val filePathforUpdate = "$padding$currentlyPlayingPath"
                     val queueRowCount: Int = withContext(Dispatchers.IO)
@@ -264,7 +260,6 @@ class PlayerControls(): ViewModel()
             {
                 ui.AllTracksView(player = player, playerFunctionality = playerFunctionality)
             }
-
         }
     }
 }
