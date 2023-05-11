@@ -20,7 +20,7 @@ class PlayerFunctionality(val database: SongQueueDao): ViewModel() {
 
     val currentFolderAudioFiles by derivedStateOf {
         currentFolder.listFiles().filter { file ->
-            file.isFile && file.extension in arrayOf("mp3", "wav", "ogg", "aac")
+            file.isFile && file.extension in arrayOf("mp3", "wav", "ogg", "aac", "flac")
         }.sortedBy { it.name }
     }
     var playingFolderAudioFiles by  mutableStateOf(currentFolderAudioFiles)
@@ -99,7 +99,7 @@ class PlayerFunctionality(val database: SongQueueDao): ViewModel() {
             for (i in playerFunctionality.playingFolderAudioFiles.indices) {
                 if (playerFunctionality.playingFolderAudioFiles[i].isDirectory
                     || playerFunctionality.playingFolderAudioFiles[i].extension !in arrayOf(
-                        "mp3", "wav", "ogg", "aac")
+                        "mp3", "wav", "ogg", "aac", "flac")
                 ) {
                     continue
                 } else {

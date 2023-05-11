@@ -44,7 +44,7 @@ class MainActivity : ComponentActivity() {
             AppDatabase::class.java, "songQueue"
         ).build()
         val songQueueDao = db.songQueueDao()
-        
+
         val playerFunctionality = PlayerFunctionality(database = songQueueDao)
         playerControls.setPlayer(this, database = songQueueDao, playerFunctionality = playerFunctionality)
 
