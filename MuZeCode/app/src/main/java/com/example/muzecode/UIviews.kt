@@ -381,9 +381,7 @@ class UIviews: ViewModel() {
     {
         val encodedSearchText = Uri.encode(songName)
         val openUrlIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/search?q=$encodedSearchText"))
-        if (openUrlIntent.resolveActivity(context.packageManager) != null) {
-            context.startActivity(openUrlIntent)
-        }
+        context.startActivity(openUrlIntent)
     }
 
     private fun getAudioFiles(folder: File): List<File> {
