@@ -3,6 +3,7 @@ package com.example.muzecode
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -16,11 +17,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.exoplayer.ExoPlayer
@@ -53,14 +54,15 @@ class UIviews: ViewModel() {
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            val img = painterResource(R.drawable.muze_logo)
+            Image(img, "MuZeLogo")
             Text(
                 text = "MuZe",
                 fontSize = 40.sp,
                 fontWeight = FontWeight.Bold
-                //modifier = Modifier.size(40.dp)
             )
             Text(text = "Jack Angione", textAlign = TextAlign.Center)
-            Text(text = "Pualo Vallecillo Rangel", textAlign = TextAlign.Center)
+            Text(text = "Paulo Vallecillo Rangel", textAlign = TextAlign.Center)
             Text(text = "Ayoob Mohammed Redi", textAlign = TextAlign.Center)
         }
     }
