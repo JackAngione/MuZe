@@ -200,7 +200,7 @@ class UIviews: ViewModel() {
                 }
             }
             itemsIndexed(playerFunctionality.currentFolderFiles) { index, audioFileCard ->
-                if (audioFileCard.isDirectory) {
+                if (audioFileCard.isDirectory && audioFileCard.name != ".thumbnails") {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
