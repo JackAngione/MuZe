@@ -65,6 +65,10 @@ class Navigation: ViewModel()
                         Button(
                             shape = RoundedCornerShape(10.dp),
                             onClick = {
+                                if(playerFunctionality.toggleView == 0)
+                                {
+                                    playerFunctionality.toggleView = 1
+                                }
                             coroutineScope.launch { drawerState.close() }
                             navController.navigate("folderView") {
 
@@ -83,6 +87,7 @@ class Navigation: ViewModel()
                         Button(
                             shape = RoundedCornerShape(10.dp),
                             onClick = {
+                                playerFunctionality.toggleView = 0
                                 coroutineScope.launch { drawerState.close() }
                                 navController.navigate("search")
                                 {
@@ -130,7 +135,7 @@ class Navigation: ViewModel()
             startDestination = "home"
         )
         {
-            composable("search") { OutlinedTextField(value = "", onValueChange = {}, placeholder = {Text("Implement Search")}) } //should be similar to folderview but with search function
+            composable("search") { playerControls.ControlsUI(database = database, playerFunctionality = playerFunctionality, ) } //should be similar to folderview but with search function
             composable("home") { ui.HomeScreen() }
             composable("folderView") { playerControls.ControlsUI(database = database, playerFunctionality = playerFunctionality) }
             composable("queue") { Text(text = "QUEUE MANAGER") } //should be similar to folderview as well

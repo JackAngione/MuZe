@@ -67,7 +67,7 @@ class PlayerControls(): ViewModel()
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun ControlsUI(playerFunctionality: PlayerFunctionality, database: SongQueueDao)
+    fun ControlsUI(database: SongQueueDao, playerFunctionality: PlayerFunctionality)
     {
         val ui = UIviews()
 
@@ -84,9 +84,16 @@ class PlayerControls(): ViewModel()
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(text = "TrackView / FolderView")
                             Switch(
-                                checked = playerFunctionality.trackFolderToggle,
+                                checked = playerFunctionality.toggleView != 1,
                                 onCheckedChange = {
-                                    playerFunctionality.trackFolderToggle = it
+                                    if(playerFunctionality.toggleView == 1)
+                                    {
+                                        playerFunctionality.toggleView = 2
+                                    }
+                                    else
+                                    {
+                                        playerFunctionality.toggleView = 1
+                                    }
                                 },
                                 colors = SwitchDefaults.colors(
                                     //checkedThumbColor = MaterialTheme.colorScheme.tertiary
@@ -252,13 +259,12 @@ class PlayerControls(): ViewModel()
                     }
                 }
             }
-            if(playerFunctionality.trackFolderToggle)
+
+            when(playerFunctionality.toggleView)
             {
-                ui.FolderView(player = player,  playerFunctionality = playerFunctionality)
-            }
-            else
-            {
-                ui.AllTracksView(player = player, playerFunctionality = playerFunctionality)
+                0 -> ui.SearchScreen(player = player, playerFunctionality = playerFunctionality)
+                1 -> ui.AllTracksView(player = player, playerFunctionality = playerFunctionality)
+                2 -> ui.FolderView(player = player,  playerFunctionality = playerFunctionality)
             }
         }
     }

@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
@@ -334,6 +335,93 @@ class UIviews: ViewModel() {
                 }
             }
         )
+    }
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun SearchScreen(player: ExoPlayer, playerFunctionality: PlayerFunctionality)
+    {
+        var searchReturnAudioFiles by remember{ mutableStateOf(emptyList<File>()) }
+        playerFunctionality.currentFolder = playerFunctionality.musicFolder
+        playerFunctionality.playingFolderAudioFiles =
+            getAudioFiles(playerFunctionality.currentFolder)
+        var searchText by remember {
+            mutableStateOf("")
+        }
+        Column(
+            content = {
+                    OutlinedTextField(
+                        value = searchText,
+                        onValueChange =
+                        {
+                            newText -> searchText = newText
+                            searchReturnAudioFiles = emptyList()
+
+                                for (audioFile in playerFunctionality.playingFolderAudioFiles)
+                                {
+                                    if(audioFile.name.lowercase().contains(searchText.lowercase()))
+                                    {
+                                        searchReturnAudioFiles += audioFile
+                                    }
+                                }
+                        },
+                        placeholder = {Text("Search Tracks:")})
+                    LazyColumn(content =
+                        {
+                            itemsIndexed(searchReturnAudioFiles) { index, audioFileCard ->
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .border(
+                                            width = 2.dp,
+                                            color = MaterialTheme.colorScheme.primary
+                                        ),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.background,
+                                        contentColor = MaterialTheme.colorScheme.onPrimary
+                                    ),
+                                    onClick = {
+                                        viewModelScope.launch {
+                                            playerFunctionality.setPlayerQueue(
+                                                player = player,
+                                                playerFunctionality = playerFunctionality,
+                                                index
+                                            )
+                                        }
+                                    })
+                                {
+                                    Row(
+                                        modifier = Modifier
+                                            .padding(16.dp)
+                                            .align(Alignment.CenterHorizontally)
+                                    )
+                                    {
+                                        Text(
+                                            text = audioFileCard.name,
+                                            modifier = Modifier
+                                                .width(300.dp)
+                                                .padding(10.dp),
+                                            fontSize = 18.sp,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Spacer(modifier = Modifier.weight(1f))
+                                        TrackDropDownMenu(
+                                            playerFunctionality = playerFunctionality,
+                                            player = player,
+                                            audioCard = audioFileCard
+                                        )
+                                    }
+                                }
+
+                            }
+                        }
+                    )
+
+
+
+
+        })
+
+
     }
 
     @Composable

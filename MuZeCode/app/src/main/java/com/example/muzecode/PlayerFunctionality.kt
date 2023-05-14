@@ -12,7 +12,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 class PlayerFunctionality(val database: SongQueueDao): ViewModel() {
-    var trackFolderToggle by mutableStateOf(false)
+    //0 = Search, 1 = AllTracks, 2 = Folder
+    var toggleView by mutableStateOf(1)
 
     val musicFolder = File("/storage/emulated/0/Music")
     var currentFolder by mutableStateOf(musicFolder)
