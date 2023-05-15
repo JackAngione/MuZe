@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
@@ -157,6 +159,7 @@ class UIviews: ViewModel() {
                                     playerFunctionality.setPlayerQueue(
                                         player = player,
                                         playerFunctionality = playerFunctionality,
+                                        playFromList = playerFunctionality.playingFolderAudioFiles,
                                         selectedIndex = index
                                     )
                                 }
@@ -286,7 +289,8 @@ class UIviews: ViewModel() {
                                     playerFunctionality.setPlayerQueue(
                                         player = player,
                                         playerFunctionality = playerFunctionality,
-                                        index
+                                        playFromList = playerFunctionality.playingFolderAudioFiles,
+                                        selectedIndex = index
                                     )
                                 }
                             }) {
@@ -350,7 +354,9 @@ class UIviews: ViewModel() {
         Column(
             content = {
                     OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
                         value = searchText,
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                         onValueChange =
                         {
                             newText -> searchText = newText
@@ -384,7 +390,8 @@ class UIviews: ViewModel() {
                                             playerFunctionality.setPlayerQueue(
                                                 player = player,
                                                 playerFunctionality = playerFunctionality,
-                                                index
+                                                playFromList = searchReturnAudioFiles,
+                                                selectedIndex = index
                                             )
                                         }
                                     })

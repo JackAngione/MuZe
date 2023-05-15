@@ -85,6 +85,7 @@ class PlayerFunctionality(val database: SongQueueDao): ViewModel() {
     suspend fun setPlayerQueue (
         player: ExoPlayer,
         playerFunctionality: PlayerFunctionality,
+        playFromList: List<File>,
         selectedIndex: Int
     )
     {
@@ -97,15 +98,15 @@ class PlayerFunctionality(val database: SongQueueDao): ViewModel() {
 
             database.insertSongUri(Song(songUri = selectedIndex.toString()))
 
-            for (i in playerFunctionality.playingFolderAudioFiles.indices) {
-                if (playerFunctionality.playingFolderAudioFiles[i].isDirectory
-                    || playerFunctionality.playingFolderAudioFiles[i].extension !in arrayOf(
+            for (i in playFromList.indices) {
+                if (playFromList[i].isDirectory
+                    || playFromList[i].extension !in arrayOf(
                         "mp3", "wav", "ogg", "aac", "flac")
                 ) {
                     continue
                 } else {
                     val audioUri =
-                        Uri.parse(playerFunctionality.playingFolderAudioFiles[i].toString())
+                        Uri.parse(playFromList[i].toString())
 
                     database.insertSongUri(Song(songUri = audioUri.toString()))
                     mediaItems.add(MediaItem.fromUri(audioUri))
