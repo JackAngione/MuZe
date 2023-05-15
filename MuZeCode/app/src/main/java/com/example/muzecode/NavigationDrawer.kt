@@ -102,24 +102,6 @@ class Navigation: ViewModel()
                             }) {
                             Text(text = "Search")
                         }
-                        //QUEUE PAGE
-                        Button(
-                            shape = RoundedCornerShape(10.dp),
-                            onClick = {
-                            coroutineScope.launch { drawerState.close() }
-                            navController.navigate("queue")
-                            {
-                                navController.graph.startDestinationRoute?.let { route ->
-                                    popUpTo(route) {
-                                        saveState = true
-                                    }
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        }) {
-                            Text(text = "Queue")
-                        }
                     }
                 }
             },
@@ -138,7 +120,6 @@ class Navigation: ViewModel()
             composable("search") { playerControls.ControlsUI(database = database, playerFunctionality = playerFunctionality, ) } //should be similar to folderview but with search function
             composable("home") { ui.HomeScreen() }
             composable("folderView") { playerControls.ControlsUI(database = database, playerFunctionality = playerFunctionality) }
-            composable("queue") { Text(text = "QUEUE MANAGER") } //should be similar to folderview as well
         }
     }
 }
