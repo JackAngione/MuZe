@@ -1,9 +1,11 @@
 package com.example.muzecode
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
+import android.content.pm.PackageManager
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -13,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.C
@@ -21,16 +24,19 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerNotificationManager
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
 
 class PlayerControls(): ViewModel()
 {
     private lateinit var player: ExoPlayer
     private lateinit var notificationManager: MediaNotificationManager
 
+    @OptIn(ExperimentalPermissionsApi::class)
     @SuppressLint("CoroutineCreationDuringComposition")
     @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     fun setPlayer(context: Context, database: SongQueueDao, playerFunctionality: PlayerFunctionality)
@@ -51,8 +57,15 @@ class PlayerControls(): ViewModel()
                 player,
                 PlayerNotificationListener()
             )
-        viewModelScope.launch {
-            playerFunctionality.startUpQueue(player = player, playerFunctionality = playerFunctionality)
+        val hasPermission = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
+        if(hasPermission)
+        {
+            viewModelScope.launch {
+                playerFunctionality.startUpQueue(player = player, playerFunctionality = playerFunctionality)
+            }
         }
     }
     @UnstableApi private inner class PlayerNotificationListener :
